@@ -215,7 +215,13 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         """
         import urlparse, md5
-
+        
+        if extra_context.has_key('options'):
+            options = extra_context['options']
+        
+        if options.has_key('method'):
+            method = options['method']
+        
         if method not in self.render_methods:
             method = self.default_render_method
         
