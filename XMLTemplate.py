@@ -243,7 +243,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         method = None
         if extra_context.has_key('options') and extra_context['options'].has_key('method'):
-            method = options['method']
+            method = extra_context['options']['method']
         elif request.has_key('method'):
             method = request['method']
                 
