@@ -52,18 +52,6 @@ def render(self, source_xml, content_type):
     source = factory.fromString(str(self()), self.absolute_url())
     proc.appendStylesheet(source)
 
-    opts = OutputParameters.OutputParameters()
-    # opts.indent = 0
-    if content_type == 'text/xml':
-        writer = XmlWriter.XmlWriter(opts,StringIO.StringIO())
-    elif content_type == 'text/html':
-        writer = HtmlWriter.HtmlWriter(opts,StringIO.StringIO())
-
-    # Set the output options.
-    #opts = OutputParameters.OutputParameters()
-    #opts.omitXmlDeclaration = 1
-    #opts.indent = 1
-
     if content_type in ['text/xml','text/html']:
         writer = XmlWriter.XmlWriter(proc.outputParams,StringIO.StringIO())
     else:
