@@ -78,10 +78,13 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         currversion = getattr(self, '_version', 0)
         if currversion == self.version:
             return 'already running latest version (%s)' % currversion
-        
-        propertyitems = self.propertyItems()
+        # a slightly modified version of propertyitems
+        propertyitems = map(lambda i,s=self: (i['id'],getattr(s, i['id'], None)),
+                            self._properties)
         for propertyitem in propertyitems:
-            if propertyitem[0] in ('stylesheet_paths', 'xslt_paths'):
+            if not propertyitem[1]:
+                pass
+            elif propertyitem[0] in ('stylesheet_paths', 'xslt_paths'):
                 self.transform_paths = propertyitem[1]
             elif propertyitem[0][:4] == 'xslt':
                 transform = getattr(self, propertyitem[1], None)
