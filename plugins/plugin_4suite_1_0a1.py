@@ -33,7 +33,7 @@ class ZBaseUriResolver(BaseUriResolver):
                 if obj:
                     self.context = obj
             if obj:
-                stream = StringIO.StringIO(obj.pt_render())
+                stream = StringIO.StringIO(str(obj.pt_render()))
         if not stream and os.access(uri, os.F_OK):
             #Hack because urllib breaks on Windows paths
             stream = open(uri)
@@ -47,27 +47,28 @@ def render(self, source_xml, content_type):
     """
     proc = Processor.Processor()
     resolver = ZBaseUriResolver(self)
-    source = InputSource.InputSource(StringIO.StringIO(self.pt_render()),
-                                     self.absolute_url(),resolver=resolver)
+
+    factory = InputSource.InputSourceFactory(resolver=resolver)
+    
+    source = factory.fromString(str(self.pt_render()), self.absolute_url())
     proc.appendStylesheet(source)
 
-    opts = OutputParameters.OutputParameters()
-    # opts.indent = 0
+    # Set the output options.
+    #opts = OutputParameters.OutputParameters()
+    #opts.omitXmlDeclaration = 1
+    #opts.indent = 1
 
-    if content_type == 'text/xml':
-        writer = XmlWriter.XmlWriter(opts,StringIO.StringIO())
-    elif content_type == 'text/html':
-        writer = HtmlWriter.HtmlWriter(opts,StringIO.StringIO())
+    if content_type in ['text/xml','text/html']:
+        writer = XmlWriter.XmlWriter(proc.outputParams,StringIO.StringIO())
     else:
-        writer = StringWriter.StringWriter(opts,StringIO.StringIO())
+        writer = StringWriter.StringWriter(proc.outputParams,StringIO.StringIO())
 
     # Apply the stylesheet to the XMLTemplate. The result is
     # written to the output stream attribute of the writer so
     # grab that and send it back to the caller.
-    proc.run(InputSource.InputSource(StringIO.StringIO(source_xml),
-                                     resolver=resolver),
-             writer=writer)
-
+    #    proc.run(factory.fromString(source_xml),writer=writer)
+    #    return writer.getStream().getvalue()
+    proc.run(factory.fromString(source_xml),writer=writer)
     return writer.getStream().getvalue()
 
 
