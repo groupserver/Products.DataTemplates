@@ -61,7 +61,7 @@ class ZStylesheetReader(StylesheetReader):
         self.__initargs = (resolveEntity, processIncludes,
                            visitedHrefs, force8Bit, extModules,
                            stylesheetIncPaths, context)
-	self._context = context
+        self._context = context
         StylesheetReader.__init__(self, resolveEntity=None, processIncludes=1,
                  visitedHrefs=None, force8Bit=0, extModules=None,
                  stylesheetIncPaths=None)
