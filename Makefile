@@ -8,3 +8,6 @@ distclean:
 disttarball: distclean
 	cd $(TOPDIR)/..; \
 	tar cvfz $(TOPDIR)/${PACKAGENAME}-$(VERSION).tar.gz ./${PACKAGEDIR}
+
+commit:	distclean
+	cvs commit
