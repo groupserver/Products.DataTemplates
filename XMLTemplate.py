@@ -199,6 +199,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                     
         """
         import xml
+        from xml.dom.ext import GetAllNs
         try:
             from xml import xpath
         except ImportError:
@@ -206,7 +207,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
 
         dom = self.get_dom(self(method='xml'))
         context = xpath.Context.Context(dom,
-                                        processorNss=xml.dom.ext.GetAllNs(dom.documentElement))
+                                        processorNss=GetAllNs(dom.documentElement))
         return xpath.Evaluate(expr, context=context)
 
     def xpath_as_xml(self, expr=''):
