@@ -1,0 +1,12 @@
+REQUIREMENTS
+------------
+
+PyXML > 0.8.3
+
+4Suite usage has been deprecated except for XSLT. Particularly
+with XPath, 4Suite appears to have some problems that don't seem to exist in
+PyXML 0.8.3. If someone wants to fix this so that both work, please send
+patches. Note that in Red Hat/Fedora it appears that PyXML has had xpath and xslt
+support removed, so you will need to build your own PyXML package. If you
+build alternative plugins, and do not use XPath, at this stage the Red Hat/Fedora
+packages should still do everything you require.
