@@ -29,3 +29,9 @@ try:
     plugin_libxslt.register_plugin(plugin_registry)
 except:
     log_tb('libxslt')
+
+try:
+    import plugin_pyana
+    plugin_pyana.register_plugin(plugin_registry)
+except:
+    log_tb('pyana')
