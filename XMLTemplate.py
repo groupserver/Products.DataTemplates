@@ -98,8 +98,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
     def om_icons(self):
         """ Return a list of icon URLs to be displayed by an ObjectManager.
-    
-    """
+        
+        """
         icons = ({'path': 'misc_/DataTemplates/ic-xml.gif',
                   'alt': self.meta_type, 'title': self.meta_type},)
         if not self._v_cooked:
@@ -180,11 +180,11 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             
         ZopePageTemplate.ZopePageTemplate.write(self, text)
 
-    def writeFromHTTPPost(self, REQUEST=None, RESPONSE=None):
+    def writeFromHTTPPost(self, REQUEST, RESPONSE=None):
         """ Writes the raw POST data to the template.
         
-        TODO: need to detect boundary cases better (at all?)
-        
+        This is implemented specifically for accepting POSTs from
+        the bitflux editor, hence the specific response codes.
         """
         # Retrieve the template text from the raw form data and call the
         # the PageTemplate write method with this text.
@@ -197,12 +197,16 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             
             # respond to the caller an XML stream indicating the result
             # of the call
-            RESPONSE.setHeader('content-type', 'text/xml')
-            RESPONSE.write('<save status="ok"/>')
+            if RESPONSE:
+                RESPONSE.setHeader('content-type', 'text/xml')
+                RESPONSE.write('<save status="ok"/>')
+            return 1
         except:
-            RESPONSE.setHeader('context-type', 'text/xml')
-            RESPONSE.write('<save status="failed"/>')
-    
+            if RESPONSE:
+                RESPONSE.setHeader('context-type', 'text/xml')
+                RESPONSE.write('<save status="failed"/>')
+            return 0
+        
     def get_dom(self, text):
         """ Return the DOM for the given XML.
         
@@ -276,7 +280,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         base = os.path.split(pathparts[2])[0]
         pathparts[2] = base
         base = urlparse.urlunparse(pathparts)
-
+        
         RESPONSE.setBase(base)
         RESPONSE.setHeader('Content-Type', content_type)
         
@@ -299,7 +303,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         security = getSecurityManager()
         bound_names['user'] = security.getUser()
-    
+        
         # Retrieve the value from the cache.
         keyset = None
         if self.ZCacheable_isCachingEnabled():
@@ -334,13 +338,13 @@ manage_addXMLTemplateForm = PageTemplateFile.PageTemplateFile(
 def manage_addXMLTemplate(self, id, file, 
                                 REQUEST=None, RESPONSE=None, submit=None):
     """ Add a new instance of XMLTemplate.
-
+        
     """
     if not id and file:
         id = file.filename
     obj = XMLTemplate(id, file)
     self._setObject(id, obj)
-
+    
     if RESPONSE and submit:
         if submit.strip().lower() == 'add':
             RESPONSE.redirect('%s/manage_main' % self.DestinationURL())
@@ -355,4 +359,3 @@ def initialize(context):
                       manage_addXMLTemplate),
         icon='icons/ic-xml.gif'
         )
-    
