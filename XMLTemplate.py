@@ -241,13 +241,12 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         request = getattr(self, 'REQUEST', None)
         
-        if method:
-            pass
-        elif extra_context.has_key('options') and extra_context['options'].has_key('method'):
+        method = None
+        if extra_context.has_key('options') and extra_context['options'].has_key('method'):
             method = options['method']
         elif request.has_key('method'):
             method = request['method']
-        
+                
         if method not in self.render_methods:
             method = self.default_render_method
         
