@@ -1,4 +1,4 @@
-# Copyright IOPEN Technologies Ltd., 2003
+# Copyright IOPEN Technologies Ltd., 2003, 2004
 # richard@iopen.net
 #
 # For details of the license, please see LICENSE.
@@ -200,11 +200,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         """
         import xml
         from xml.dom.ext import GetAllNs
-        try:
-            from xml import xpath
-        except ImportError:
-            from Ft.Xml import XPath as xpath
-
+        from xml import xpath
+        
         dom = self.get_dom(self(method='xml'))
         context = xpath.Context.Context(dom,
                                         processorNss=GetAllNs(dom.documentElement))
