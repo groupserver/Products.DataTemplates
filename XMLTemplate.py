@@ -146,6 +146,9 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         """
         return self.render_methods
 
+    #
+    # XPath Methods
+    #
     def xpath(self, expr=''):
         """ Return the snippets corresponding to the given xpath query.
                     
@@ -159,7 +162,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         dom = self.get_dom(self(method='xml'))
         context = xpath.Context.Context(dom,
                                         processorNss=xml.dom.ext.GetAllNs(dom.documentElement))
-        return xpath.Evaluate(expr,context=context)
+        return xpath.Evaluate(expr, context=context)
 
     def xpath_as_xml(self, expr=''):
         """ Return the snippets corresponding to the xpath query as a list
@@ -172,6 +175,14 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                 results.append(result.toxml())
         
         return results
+
+    def xpath_as_string(self, expr=''):
+        """ Return the snippets corresponding to the xpath query as a single
+            contiguous string, even if that means that the result isn't valid
+            XML.
+        
+        """
+        return ''.join(self.xpath_as_xml(expr))
 
     def _get_path_objs(self, path_list):
         """ Return the objects corresponding to the specified path list
