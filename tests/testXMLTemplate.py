@@ -161,5 +161,5 @@ else:
     import unittest
     def test_suite():
         suite = unittest.TestSuite()
-        suite.addTest(unittest.makeSuite(TestSomeProduct))
+        suite.addTest(unittest.makeSuite(TestXMLTemplate))
         return suite
