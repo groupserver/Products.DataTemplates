@@ -371,7 +371,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         """ Call a Data Template.
             
         A good deal of this code is 'borrowed' directly from
-        the PageTemplate code from which this inherits.
+        the ZopePageTemplate code from which this inherits.
         
         In addition to the parameters normally recognised by a
         ZopePageTemplate, a 'method' parameter may also be passed,
