@@ -3,22 +3,22 @@ import os, Globals
 
 from Products.PageTemplates import ZopePageTemplate, PageTemplateFile
 from AccessControl import getSecurityManager, ClassSecurityInfo
-#from Products.ParsedXML import ParsedXML
 from DTCacheManager import DTCacheManagerAware
 
 class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                   DTCacheManagerAware):
     """ An XML document that may use TAL and METAL to produce itself.
 
-    As a side-effect, the stylesheet is also self-validating.
-
+    As a side-effect, the document is also self-validating, thanks to
+    the inheriting from PageTemplates.
+    
     """
     security = ClassSecurityInfo()
     
     unselected_xslt = 'do not use xslt'
     meta_type = "XML Template"
 
-    version = 1.11
+    version = 1.12
 
     render_methods = ['xml', 'html', 'pdf']
     content_type_map = {'xml': 'text/xml',
@@ -97,7 +97,9 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         self._properties = tuple(properties)
         
     def om_icons(self):
-        """Return a list of icon URLs to be displayed by an ObjectManager"""
+        """ Return a list of icon URLs to be displayed by an ObjectManager.
+	
+	"""
         icons = ({'path': 'misc_/DataTemplates/ic-xml.gif',
                   'alt': self.meta_type, 'title': self.meta_type},)
         if not self._v_cooked:
@@ -115,9 +117,16 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         return self.render_methods
 
     def xpath(self, expr=''):
-        """ Return the snippets corresponding to the given xpath
-        query.
-        
+        """ Return the snippets corresponding to the given xpath query.
+	
+	TODO: This relies on the get_dom method working, which is
+	pretty fundamentally broken thanks to the dependency on ParsedXML.
+	
+	TODO: This also doesn't pick up the context as it should (as _exec
+	does) which makes it pretty much useless in a production situation.
+	If we don't have a use for this method, maybe it should be
+	deprecated?
+	
         """
         import xml
         nodes = xml.xpath.Evaluate(expr,
@@ -165,7 +174,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
 
     def write(self, text, pretty_print=0):
         """ Conveniently exposes the 'write' method provided by
-        ZopePageTemplate.
+	ZopePageTemplate.
         
         """
         # Don't raise any expat exceptions from the pretty printing, we
@@ -181,9 +190,10 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
 
     def writeFromHTTPPost(self, REQUEST=None, RESPONSE=None):
         """ Writes the raw POST data to the template.
-            
-            TODO: need to detect boundary cases better (at all?)
-        """
+	
+	TODO: need to detect boundary cases better (at all?)
+        
+	"""
         # Retrieve the template text from the raw form data and call the
         # the PageTemplate write method with this text.
         try:
@@ -203,7 +213,10 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
     
     def get_dom(self, text):
         """ Return the DOM for the given XML.
-        
+	
+	TODO: This needs serious fixing, since it has a dependency on
+	ParsedXML.
+	
         """
         from Products.ParsedXML.DOM.ExpatBuilder import ExpatBuilder
 
@@ -211,10 +224,10 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         dom = ep.parseString(text)
 
         return dom
-
+    
     def pretty_print(self, text):
         """ Pretty print the XML.
-    
+	
         """
         # We need to use StringIO not cStringIO, because the latter is
         # not unicode aware :(
