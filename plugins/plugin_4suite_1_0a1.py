@@ -1,3 +1,11 @@
+# Copyright Lakros Technologies Ltd., 2003
+# damien@lakros.com 
+#
+# For details of the license, please see LICENSE.
+#
+# You MUST follow the rules in README_STYLE before checking in code
+# to the head. Code which does not follow the rules will be rejected.  
+#
 import urllib, StringIO, os, sys
 import cStringIO
 StringIO = cStringIO
