@@ -121,8 +121,14 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                     
         """
         import xml
-        nodes = xml.xpath.Evaluate(expr,
-                                    self.get_dom(self(method='xml')))
+        try:
+            from xml import xpath
+        except ImportError:
+            from Ft.Xml import XPath as xpath
+
+        dom = self.get_dom(self(method='xml'))
+        context = xpath.Context.Context(dom,processorNss=xml.dom.ext.GetAllNs(dom.documentElement))
+        nodes = xpath.Evaluate(expr,context=context)
 
         return nodes
 
