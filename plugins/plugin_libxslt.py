@@ -6,7 +6,7 @@
 # You MUST follow the rules in README_STYLE before checking in code
 # to the head. Code which does not follow the rules will be rejected.  
 #
-import libxslt, libxml2, StringIO, sys
+import libxslt, libxml2, StringIO, sys, os, urllib, tempfile
 
 if hasattr(libxslt.stylesheet, 'saveResultToString'):
     RENDERVIAFILE=0
@@ -22,8 +22,6 @@ class UriResolver:
         self.context = context
 
     def resolve(self, uri, id, ctxt):
-        import sys
-
         stream = None
         if self.context:
             for pathpart in uri.split('/'):
@@ -48,7 +46,6 @@ def render(self, source_xml, content_type):
     """ Render document using libxslt.
 
     """
-    import tempfile, os, StringIO
 
     # handle URI's as if they were in the ZODB
     resolver = UriResolver(self).resolve
