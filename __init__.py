@@ -8,10 +8,12 @@
 #
 def initialize(context):
     # Import lazily, and defer initialization to the module
-    import XMLTemplate, XSLTTemplate, DTCacheManager
+    import XMLTemplate, XSLTTemplate, RMLRenderer, DTCacheManager
     XMLTemplate.initialize(context)
     XSLTTemplate.initialize(context)
+    RMLRenderer.initialize(context)
     DTCacheManager.initialize(context)
 
 # do a quick import of the plugins, in order to get any errors immediately
 import plugins
+import rmlplugins
