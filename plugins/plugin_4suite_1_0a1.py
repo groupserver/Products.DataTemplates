@@ -24,7 +24,7 @@ class ZBaseUriResolver(BaseUriResolver):
         stream = None
         if self.context:
             for pathpart in uri.split('/'):
-                if pathpart in ['..','.','http:']:
+                if pathpart in ['..','.']:
                     # ignore these, acquisition will work anyway
                     continue
                 obj = getattr(self.context, pathpart, None)
@@ -50,7 +50,7 @@ def render(self, source_xml, content_type):
     resolver = ZBaseUriResolver(self)
 
     factory = InputSource.InputSourceFactory(resolver=resolver)
-    source = factory.fromString(str(self()), self.absolute_url())
+    source = factory.fromString(str(self()), '/'.join(self.getPhysicalPath()))
     proc.appendStylesheet(source)
 
 
