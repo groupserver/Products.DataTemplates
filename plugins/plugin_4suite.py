@@ -25,4 +25,5 @@ def render(self, source_xml, content_type):
 
 def register_plugin(plugin_registry):
     plugin_registry['http://iopen.co.nz/plugins/xslt/4suite'] = ('4Suite',
-                                                                 render)
+                                                                  render)
+

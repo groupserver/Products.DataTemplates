@@ -1,11 +1,18 @@
-import plugin_4suite, plugin_libxslt
+import sys, traceback
+def log_tb(plugin_name):
+    sys.stderr.write('Problem importing DataTemplate plugin %s\n' % plugin_name)
+    traceback.print_exc(sys.stderr)
+    
 
 plugin_registry = {}
 
-plugin_4suite.register_plugin(plugin_registry)
-plugin_libxslt.register_plugin(plugin_registry)
-
-#plugin_registry = {'http://iopen.co.nz/plugins/xslt/4suite': ('4Suite',
-#                                                              plugin_4suite),
-#                   'http://iopen.co.nz/plugins/xslt/libxslt': ('libxslt',
-#                                                               plugin_libxslt)}
+try:
+    import plugin_4suite
+    plugin_4suite.register_plugin(plugin_registry)
+except:
+    log_tb('4suite')
+try:
+    import plugin_libxslt
+    plugin_libxslt.register_plugin(plugin_registry)
+except:
+    log_tb('libxslt')

@@ -1,5 +1,5 @@
 # we can't use cStringIO because it's not unicode compliant
-import urllib, StringIO, os
+import urllib, StringIO, os, sys
 import cStringIO
 StringIO = cStringIO
 #
@@ -15,7 +15,14 @@ class ZBaseUriResolver(BaseUriResolver):
         uri = self.normalize(uri, base)
         stream = None
         if context:
-            obj = getattr(context, uri, None)
+            for pathpart in uri.split('/'):
+                if pathpart == '..' or pathpart == '.':
+                    # ignore these, acquisition will work anyway
+                    continue
+                obj = getattr(context, pathpart, None)
+                # the new context is the object
+                if obj:
+                    context = obj
             if obj:
                 stream = StringIO.StringIO(obj.pt_render())
         if not stream and os.access(uri, os.F_OK):
@@ -23,6 +30,7 @@ class ZBaseUriResolver(BaseUriResolver):
             stream = open(uri)
         elif not stream:
             stream = urllib.urlopen(uri)
+        sys.stdout.flush()
         return stream
 
 from Ft.Lib import ReaderBase
@@ -61,7 +69,6 @@ class ZStylesheetReader(StylesheetReader):
         self._importDepth = importDepth
         save_sheet_uri = self._ssheetUri
         self._ssheetUri = urllib.basejoin(baseUri, uri)
-        print '%%%s%%' % self._context
         result = ReaderBase.DomletteReader.fromUri(self, uri, baseUri,
                                                    ownerDoc, stripElements,
                                                    context=self._context)
