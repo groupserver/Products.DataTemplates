@@ -10,8 +10,6 @@ import cStringIO
 from Ft.Lib.Uri import BaseUriResolver
 class ZBaseUriResolver(BaseUriResolver):
     def resolve(self, uri, base='', context=None):
-        import sys
-        sys.stdout.write('resolve\n'); sys.stdout.flush()
         uri = self.normalize(uri, base)
         stream = None
         if context:
@@ -30,7 +28,6 @@ class ZBaseUriResolver(BaseUriResolver):
             stream = open(uri)
         elif not stream:
             stream = urllib.urlopen(uri)
-        sys.stdout.flush()
         return stream
 
 from Ft.Lib import ReaderBase
