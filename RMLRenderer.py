@@ -162,16 +162,16 @@ class RMLRenderer(SimpleItem, PropertyManager):
             if not stylesheet:
                 raise TemplateError, 'Stylesheet %s did not exist' % stylesheet_id
             
-            rendered = stylesheet.render_xml(xml_rendered, content_type)
+            rendered = stylesheet.render_xml(source_xml, content_type)
             
         render_plugin = self.get_currentRenderPlugin()
         if render_plugin:
             result = render_plugin(self, rendered, content_type)
         else:
             result = ''
-	
+	    
         return result
-
+        
     def index_html(self, RESPONSE):
         """ Return the raw RML content.
         
