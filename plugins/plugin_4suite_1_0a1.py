@@ -1,4 +1,3 @@
-
 import urllib, StringIO, os, sys
 import cStringIO
 StringIO = cStringIO
@@ -33,7 +32,8 @@ class ZBaseUriResolver(BaseUriResolver):
                 if obj:
                     self.context = obj
             if obj:
-                stream = StringIO.StringIO(str(obj.pt_render()))
+                stream = StringIO.StringIO(str(obj()))
+
         if not stream and os.access(uri, os.F_OK):
             #Hack because urllib breaks on Windows paths
             stream = open(uri)
@@ -49,9 +49,15 @@ def render(self, source_xml, content_type):
     resolver = ZBaseUriResolver(self)
 
     factory = InputSource.InputSourceFactory(resolver=resolver)
-    
-    source = factory.fromString(str(self.pt_render()), self.absolute_url())
+    source = factory.fromString(str(self()), self.absolute_url())
     proc.appendStylesheet(source)
+
+    opts = OutputParameters.OutputParameters()
+    # opts.indent = 0
+    if content_type == 'text/xml':
+        writer = XmlWriter.XmlWriter(opts,StringIO.StringIO())
+    elif content_type == 'text/html':
+        writer = HtmlWriter.HtmlWriter(opts,StringIO.StringIO())
 
     # Set the output options.
     #opts = OutputParameters.OutputParameters()
@@ -61,16 +67,15 @@ def render(self, source_xml, content_type):
     if content_type in ['text/xml','text/html']:
         writer = XmlWriter.XmlWriter(proc.outputParams,StringIO.StringIO())
     else:
-        writer = StringWriter.StringWriter(proc.outputParams,StringIO.StringIO())
+        writer = StringWriter.StringWriter(proc.outputParams,
+                                           StringIO.StringIO())
 
     # Apply the stylesheet to the XMLTemplate. The result is
     # written to the output stream attribute of the writer so
     # grab that and send it back to the caller.
-    #    proc.run(factory.fromString(source_xml),writer=writer)
-    #    return writer.getStream().getvalue()
     proc.run(factory.fromString(source_xml),writer=writer)
-    return writer.getStream().getvalue()
 
+    return writer.getStream().getvalue()
 
 def register_plugin(plugin_registry):
     """Register the 4Suite plugin.
