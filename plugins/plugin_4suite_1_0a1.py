@@ -45,6 +45,7 @@ def render(self, source_xml, content_type):
     """Render document using 4suite.
 
     """
+    pubUrl = self.REQUEST['PUBLISHED'].absolute_url()
     proc = Processor.Processor()
     resolver = ZBaseUriResolver(self)
 
@@ -62,7 +63,7 @@ def render(self, source_xml, content_type):
     # Apply the stylesheet to the XMLTemplate. The result is
     # written to the output stream attribute of the writer so
     # grab that and send it back to the caller.
-    proc.run(factory.fromString(source_xml),writer=writer)
+    proc.run(factory.fromString(source_xml),pubUrl,writer=writer)
 
     return writer.getStream().getvalue()
 
