@@ -22,7 +22,7 @@ class ZBaseUriResolver(BaseUriResolver):
                 if obj:
                     context = obj
             if obj:
-                stream = StringIO.StringIO(obj.pt_render())
+                stream = StringIO.StringIO(str(obj()))
         if not stream and os.access(uri, os.F_OK):
             #Hack because urllib breaks on Windows paths
             stream = open(uri)
