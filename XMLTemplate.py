@@ -54,7 +54,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         if hasattr(file, 'read'):
             self.write(file.read())
-            
+    
     def upgrade(self):
         """ Upgrade to the latest version.
         
@@ -112,15 +112,12 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
     
     def get_renderMethods(self):
         """ Get the available render methods.
-
+        
         """
         return self.render_methods
 
     def xpath(self, expr=''):
         """ Return the snippets corresponding to the given xpath query.
-        
-        TODO: This relies on the get_dom method working, which is
-        pretty fundamentally broken thanks to the dependency on ParsedXML.
         
         TODO: This also doesn't pick up the context as it should (as _exec
         does) which makes it pretty much useless in a production situation.
@@ -209,37 +206,29 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
     def get_dom(self, text):
         """ Return the DOM for the given XML.
         
-        TODO: This needs serious fixing, since it has a dependency on
-        ParsedXML.
-        
         """
-        from Products.ParsedXML.DOM.ExpatBuilder import ExpatBuilder
-
-        ep = ExpatBuilder()
-        dom = ep.parseString(text)
-
+        from xml.dom import minidom
+        
+        dom = minidom.parseString(text)
+        
         return dom
     
     def pretty_print(self, text):
         """ Pretty print the XML.
-    
+        
         """
-        # We need to use StringIO not cStringIO, because the latter is
-        # not unicode aware :(
-        import StringIO
-        from Products.ParsedXML.PrettyPrinter import PrintVisitor
-
-        stream = StringIO.StringIO()
+        from xml.dom.ext import PrettyPrint
+        from StringIO import StringIO
+        
         dom = self.get_dom(text)
-
-        pv = PrintVisitor(dom, stream=stream, encoding=None,
-                          html=0, contentType="text/xml",
-                          prettyPrint=1)()
         
-        stream.seek(0)
+        stream = self.StringIO()
+        PrettyPrint(dom, stream)
         
-        return stream.read()
-
+        dom.unlink()
+        
+        return stream.getvalue()
+        
     def render_as(self, method=None, extra_context={}, RESPONSE=None):
         """ Render the document via the given method.
         
@@ -261,7 +250,9 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         xslt_id = getattr(self, 'xslt_%s' % method, '')
         
         content_type = self.content_type_map.get(method, 'text/plain')
-        xml_rendered = self.pt_render(extra_context=extra_context)
+        # note we make sure we don't have a unicode object at the later steps, because that causes
+        # all sorts of headaches with the XML parser later
+        xml_rendered = str(self.pt_render(extra_context=extra_context))
         if not xslt_id or xslt_id == self.unselected_xslt:
             rendered = xml_rendered
         else:
@@ -298,17 +289,17 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         if not kw.has_key('args'):
             kw['args'] = args
         bound_names['options'] = kw
-
+        
         try:
             response = self.REQUEST.RESPONSE
             if not response.headers.has_key('content-type'):
                 response.setHeader('content-type', self.content_type)
         except AttributeError:
             pass
-
+        
         security = getSecurityManager()
         bound_names['user'] = security.getUser()
-
+    
         # Retrieve the value from the cache.
         keyset = None
         if self.ZCacheable_isCachingEnabled():
