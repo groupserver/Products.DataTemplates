@@ -4,7 +4,7 @@ def render(self, source_xml, content_type):
 
     """
     import tempfile, os, StringIO
-    styledoc = libxml2.parseDoc(self.pt_render())
+    styledoc = libxml2.parseDoc(self())
     style = libxslt.parseStylesheetDoc(styledoc)
     doc = libxml2.parseDoc(source_xml)
     result = style.applyStylesheet(doc, None)

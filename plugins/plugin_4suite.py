@@ -6,11 +6,10 @@ def render(self, source_xml, content_type):
     # we have to use StringIO not cStringIO because, at this time,
     # cStringIO isn't unicode aware :(
     import StringIO, xml
-    StringIO = cStringIO
-
+    
     proc = Processor()
     proc.setStylesheetReader(ZStylesheetReader(context=self))
-    proc.appendStylesheetStream(StringIO.StringIO(self.pt_render()))
+    proc.appendStylesheetStream(StringIO.StringIO(str(self())))
 
     if content_type == 'text/xml':
         writer = xml.xslt.XmlWriter.XmlWriter(None)

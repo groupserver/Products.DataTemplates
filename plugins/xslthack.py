@@ -1,7 +1,7 @@
 # we can't use cStringIO because it's not unicode compliant
 import urllib, StringIO, os, sys
 import cStringIO
-StringIO = cStringIO
+#StringIO = cStringIO
 #
 # override some methods because Zope has no fucking way
 # to get the context globally.
