@@ -146,22 +146,26 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                 
         return objs
 
-    def get_templateCandidates(self):
+    def get_templateCandidates(self, include_unselected=1):
         """ Return a tuple of XSLT Containers available for us
         to render against.
 
+	Optionally specify whether we want the unselected candidate
+	option to be included.
+	
         """
         vals = []
-
-        vals.append(self.unselected_xslt)
+        
+        if include_unselected:
+            vals.append(self.unselected_xslt)
         for item in self.superValues('XSLT Template'):
             vals.append(item.id)
 
         for obj in self._get_stylesheet_path_objs():
             for item in obj.superValues('XSLT Template'):
                 vals.append(item.id)
-
-        return vals
+	
+        return tuple(vals)
 
     def assign_xsl_template(self, xsl_template, REQUEST=None, RESPONSE=None):
         """ Assign an xsl template.
