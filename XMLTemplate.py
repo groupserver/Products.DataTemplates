@@ -216,11 +216,14 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         """
         import urlparse, md5
         
-        if extra_context.has_key('options'):
-            options = extra_context['options']
+        request = getattr(self, 'REQUEST', None)
         
-        if options.has_key('method'):
+        if method:
+            pass
+        elif extra_context.has_key('options') and extra_context['options'].has_key('method'):
             method = options['method']
+        elif request.has_key('method'):
+            method = request['method']
         
         if method not in self.render_methods:
             method = self.default_render_method
