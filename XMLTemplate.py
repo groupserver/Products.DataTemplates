@@ -167,15 +167,6 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
 	
         return tuple(vals)
 
-    def assign_xsl_template(self, xsl_template, REQUEST=None, RESPONSE=None):
-        """ Assign an xsl template.
-
-        """
-        self.manage_changeProperties(xsl_template=xsl_template)
-
-        if RESPONSE:
-            RESPONSE.redirect('%s/manage_main' % self.id)
-
     def write(self, text, pretty_print=0):
         """ Conveniently exposes the 'write' method provided by
 	ZopePageTemplate.
