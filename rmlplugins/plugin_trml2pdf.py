@@ -19,8 +19,40 @@ class RMLPluginError(Exception):
 def _rml_doc__init__(self, data, context):
     self.dom = xml.dom.minidom.parseString(data)
     self.context = context
-    self.filename = self.dom.documentElement.getAttribute('filename') 
+    self.filename = self.dom.documentElement.getAttribute('filename')
 trml2pdf._rml_doc.__init__ = _rml_doc__init__
+
+def _rml_doc_render(self, out):
+    el = self.dom.documentElement.getElementsByTagName('stylesheet')
+    self.styles = trml2pdf._rml_styles(el, self.context)
+    
+    el = self.dom.documentElement.getElementsByTagName('template')
+    if len(el):
+        pt_obj = trml2pdf._rml_template(out, el[0], self)
+        pt_obj.render(self.dom.documentElement.getElementsByTagName('story')[0])
+    else:
+        self.canvas = trml2pdf.canvas.Canvas(out)
+        pd = self.dom.documentElement.getElementsByTagName('pageDrawing')[0]
+        pd_obj = trml2pdf._rml_canvas(self.canvas, None, self)
+        pd_obj.render(pd)
+        self.canvas.showPage()
+        self.canvas.save()
+trml2pdf._rml_doc.render = _rml_doc_render
+
+def _rml_styles__init__(self, nodes, context):
+    self.context = context
+    self.styles = {}
+    self.names = {}
+    self.table_styles = {}
+    for node in nodes:
+        for style in node.getElementsByTagName('blockTableStyle'):
+            self.table_styles[style.getAttribute('id')] = self._table_style_get(style)
+        for style in node.getElementsByTagName('paraStyle'):
+            self.styles[style.getAttribute('name')] = self._para_style_get(style)
+        for variable in node.getElementsByTagName('initialize'):
+            for name in variable.getElementsByTagName('name'):
+                self.names[ name.getAttribute('id')] = name.getAttribute('value')
+trml2pdf._rml_styles.__init__ = _rml_styles__init__
 
 def _image(self, node):
     from reportlab.lib.utils import ImageReader
