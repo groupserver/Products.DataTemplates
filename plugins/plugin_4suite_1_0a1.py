@@ -53,7 +53,8 @@ def render(self, source_xml, content_type):
     """Render document using 4suite.
 
     """
-    pubUrl = self.REQUEST['PUBLISHED'].absolute_url()
+    #pubUrl = self.REQUEST['PUBLISHED'].absolute_url()
+    pubUrl = self.REQUEST['URL']
     proc = Processor.Processor()
     resolver = ZBaseUriResolver(self)
 
