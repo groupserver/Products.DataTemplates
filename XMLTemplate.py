@@ -118,18 +118,25 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
 
     def xpath(self, expr=''):
         """ Return the snippets corresponding to the given xpath query.
-        
-        TODO: This also doesn't pick up the context as it should (as _exec
-        does) which makes it pretty much useless in a production situation.
-        If we don't have a use for this method, maybe it should be
-        deprecated?
-        
+                    
         """
         import xml
         nodes = xml.xpath.Evaluate(expr,
-                                    self.get_dom(self.pt_render()))
+                                    self.get_dom(self(method='xml')))
 
         return nodes
+
+    def xpath_as_xml(self, expr=''):
+        """ Return the snippets corresponding to the xpath query as a list
+            of XML strings.
+        
+        """
+        results = []
+        for result in self.xpath(expr):
+            if result:
+                results.append(result.toxml())
+        
+        return results
 
     def _get_stylesheet_path_objs(self):
         """ Return the objects corresponding to self.stylesheet_paths.
