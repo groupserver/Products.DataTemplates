@@ -179,6 +179,28 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
 
         ZopePageTemplate.ZopePageTemplate.write(self, text)
 
+    def writeFromHTTPPost(self, REQUEST=None, RESPONSE=None):
+        """ Writes the raw POST data to the template.
+            
+            TODO: need to detect boundary cases better (at all?)
+        """
+        # Retrieve the template text from the raw form data and call the
+        # the PageTemplate write method with this text.
+        try:
+            REQUEST.stdin.seek(0)
+            text = REQUEST.stdin.read()
+
+            if len(text) > 0:
+                self.write(text)
+
+            # respond to the caller an XML stream indicating the result
+            # of the call
+            RESPONSE.setHeader('content-type', 'text/xml')
+            RESPONSE.write('<save status="ok"/>')
+        except:
+            RESPONSE.setHeader('context-type', 'text/xml')
+            RESPONSE.write('<save status="failed"/>')
+    
     def get_dom(self, text):
         """ Return the DOM for the given XML.
         
