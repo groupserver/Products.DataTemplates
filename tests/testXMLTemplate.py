@@ -39,6 +39,37 @@ def minimallyEqualXML(one, two):
     
     return sf(onedom.toxml()) == sf(twodom.toxml())
 
+from Products.DataTemplates import XSLTTemplate
+class TestXSLTTemplate(ZopeTestCase.ZopeTestCase):
+    def afterSetUp(self):
+        pass
+        
+    def afterClear(self):
+        pass    
+
+    def _setupXSLTTemplate(self):
+        """ Create a new XSLT Template as the basis for our tests.
+        
+        """
+        XSLTTemplate.manage_addXSLTTemplate(self.folder, 'xslt_template', None)
+        return self.folder.xslt_template
+
+    def testCreateXSLTTemplate(self):
+        self._setupXSLTTemplate()
+        self.failUnless(hasattr(self.folder, 'xslt_template'))
+
+    def testWrite(self):
+        from xml.dom import minidom
+        
+        xslt_template = self._setupXSLTTemplate()
+        
+        xslt_template.write(testXML)
+        
+        result = xslt_template()
+        
+        # convert into DOM and back again to get an equivalent interpretation of the XML
+        self.failUnless(minidom.parseString(result).toxml() == minidom.parseString(testXML).toxml())
+
 from Products.DataTemplates import XMLTemplate
 class TestXMLTemplate(ZopeTestCase.ZopeTestCase):
     def afterSetUp(self):
