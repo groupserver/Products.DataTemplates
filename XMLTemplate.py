@@ -325,7 +325,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         else:
             xslt = getattr(self, xslt_id, None)
             if not xslt:
-                for obj in self._get_stylesheet_path_objs():
+                for obj in self._get_path_objs(self.stylesheet_paths):
                     xslt = getattr(obj, xslt_id, None)
                     if xslt:
                         break
