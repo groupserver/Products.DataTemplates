@@ -98,8 +98,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
     def om_icons(self):
         """ Return a list of icon URLs to be displayed by an ObjectManager.
-	
-	"""
+    
+    """
         icons = ({'path': 'misc_/DataTemplates/ic-xml.gif',
                   'alt': self.meta_type, 'title': self.meta_type},)
         if not self._v_cooked:
@@ -118,19 +118,19 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
 
     def xpath(self, expr=''):
         """ Return the snippets corresponding to the given xpath query.
-	
-	TODO: This relies on the get_dom method working, which is
-	pretty fundamentally broken thanks to the dependency on ParsedXML.
-	
-	TODO: This also doesn't pick up the context as it should (as _exec
-	does) which makes it pretty much useless in a production situation.
-	If we don't have a use for this method, maybe it should be
-	deprecated?
-	
+        
+        TODO: This relies on the get_dom method working, which is
+        pretty fundamentally broken thanks to the dependency on ParsedXML.
+        
+        TODO: This also doesn't pick up the context as it should (as _exec
+        does) which makes it pretty much useless in a production situation.
+        If we don't have a use for this method, maybe it should be
+        deprecated?
+        
         """
         import xml
         nodes = xml.xpath.Evaluate(expr,
-                                   self.get_dom(self.pt_render()))
+                                    self.get_dom(self.pt_render()))
 
         return nodes
 
@@ -143,16 +143,16 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             obj = self.unrestrictedTraverse(path, None)
             if obj and obj.meta_type == 'Folder':
                 objs.append(obj)
-                
+        
         return objs
 
     def get_templateCandidates(self, include_unselected=1):
         """ Return a tuple of XSLT Containers available for us
         to render against.
-
-	Optionally specify whether we want the unselected candidate
-	option to be included.
-	
+        
+        Optionally specify whether we want the unselected candidate
+        option to be included.
+        
         """
         vals = []
         
@@ -160,16 +160,16 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             vals.append(self.unselected_xslt)
         for item in self.superValues('XSLT Template'):
             vals.append(item.id)
-
+        
         for obj in self._get_stylesheet_path_objs():
             for item in obj.superValues('XSLT Template'):
                 vals.append(item.id)
-	
+        
         return tuple(vals)
 
     def write(self, text, pretty_print=0):
         """ Conveniently exposes the 'write' method provided by
-	ZopePageTemplate.
+        ZopePageTemplate.
         
         """
         # Don't raise any expat exceptions from the pretty printing, we
@@ -180,24 +180,24 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                 text = self.pretty_print(text)
             except:
                 pass
-
+            
         ZopePageTemplate.ZopePageTemplate.write(self, text)
 
     def writeFromHTTPPost(self, REQUEST=None, RESPONSE=None):
         """ Writes the raw POST data to the template.
-	
-	TODO: need to detect boundary cases better (at all?)
         
-	"""
+        TODO: need to detect boundary cases better (at all?)
+        
+        """
         # Retrieve the template text from the raw form data and call the
         # the PageTemplate write method with this text.
         try:
             REQUEST.stdin.seek(0)
             text = REQUEST.stdin.read()
-
+            
             if len(text) > 0:
                 self.write(text)
-
+            
             # respond to the caller an XML stream indicating the result
             # of the call
             RESPONSE.setHeader('content-type', 'text/xml')
@@ -208,10 +208,10 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
     
     def get_dom(self, text):
         """ Return the DOM for the given XML.
-	
-	TODO: This needs serious fixing, since it has a dependency on
-	ParsedXML.
-	
+        
+        TODO: This needs serious fixing, since it has a dependency on
+        ParsedXML.
+        
         """
         from Products.ParsedXML.DOM.ExpatBuilder import ExpatBuilder
 
@@ -222,7 +222,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
     
     def pretty_print(self, text):
         """ Pretty print the XML.
-	
+    
         """
         # We need to use StringIO not cStringIO, because the latter is
         # not unicode aware :(
@@ -364,3 +364,4 @@ def initialize(context):
                       manage_addXMLTemplate),
         icon='icons/ic-xml.gif'
         )
+    
