@@ -177,7 +177,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                 text = self.pretty_print(text)
             except:
                 pass
-            
+        
         ZopePageTemplate.ZopePageTemplate.write(self, text)
 
     def writeFromHTTPPost(self, REQUEST, RESPONSE=None):
@@ -233,7 +233,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         return stream.getvalue()
         
-    def render_as(self, method=None, extra_context={}, RESPONSE=None):
+    def _render_as(self, extra_context={}, RESPONSE=None):
         """ Render the document via the given method.
         
         """
@@ -287,7 +287,15 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         return rendered
 
     def _exec(self, bound_names, args, kw):
-        """ Call a Page Template
+        """ Call a Data Template.
+            
+        A good deal of this code is 'borrowed' directly from
+        the PageTemplate code from which this inherits.
+        
+        In addition to the parameters normally recognised by a
+        ZopePageTemplate, a 'method' parameter may also be passed,
+        which should match one of the defined 'render_methods' in
+        order to change the type of output produced.
         
         """
         if not kw.has_key('args'):
@@ -318,9 +326,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         # Execute the template in a new security context.
         security.addContext(self)
         try:
-            result = self.render_as(extra_context=bound_names,
-                                    RESPONSE=response)
-            #result = self.pt_render(extra_context=bound_names)
+            result = self._render_as(extra_context=bound_names,
+                                     RESPONSE=response)
             if keyset is not None:
                 # Store the result in the cache.
                 self.ZCacheable_set(result, keywords=keyset)
