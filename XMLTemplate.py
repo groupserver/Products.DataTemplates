@@ -12,7 +12,7 @@ from Products.PageTemplates import ZopePageTemplate, PageTemplateFile
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from DTCacheManager import DTCacheManagerAware
 
-class TemplateError(Exception):
+class TransformError(Exception):
     pass
 
 class XMLTemplate(ZopePageTemplate.ZopePageTemplate,

@@ -10,6 +10,7 @@ from OFS.SimpleItem import SimpleItem
 from OFS.PropertyManager import PropertyManager
 from AccessControl import ClassSecurityInfo
 from Products.PageTemplates import PageTemplateFile
+from XMLTemplate import TransformError
 
 class RMLRenderer(SimpleItem, PropertyManager):
     """ A handler for RML as part of the DataTemplate system. The resulting RML is
@@ -160,7 +161,7 @@ class RMLRenderer(SimpleItem, PropertyManager):
                     if stylesheet:
                         break
             if not stylesheet:
-                raise TemplateError, 'Stylesheet %s did not exist' % stylesheet_id
+                raise TransformError, 'Stylesheet %s did not exist' % stylesheet_id
             
             rendered = stylesheet.render_xml(source_xml, content_type)
             
