@@ -16,6 +16,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
     security = ClassSecurityInfo()
     
     unselected_xslt = 'do not use xslt'
+    unselected_schema = 'do not use schema'
     meta_type = "XML Template"
 
     version = 1.12
@@ -29,12 +30,14 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
 
     default_render_method = ''
     stylesheet_paths = []
+    schema_paths = []
     _def_properties = ({'id': 'title', 'type': 'string', 'mode': 'w'},
                        {'id':'cache_manager', 'type': 'selection', 'mode':'w',
                         'select_variable': 'get_cacheManagerIds'},
                        {'id':'default_render_method', 'type': 'selection',
                         'mode': 'w', 'select_variable': 'get_renderMethods'},
-                       {'id':'stylesheet_paths', 'type': 'lines', 'mode': 'w'}
+                       {'id':'stylesheet_paths', 'type': 'lines', 'mode': 'w'},
+                       {'id':'schema_paths', 'type': 'lines', 'mode': 'w'}
                        )
     _properties = _def_properties
     
@@ -49,23 +52,25 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         self._setPropValue('content_type', 'text/xml')
 
         self.setup_xsltProperties()
+        self.setup_schemaProperties()
 
         ZopePageTemplate.ZopePageTemplate.__init__(self, id)
-        
+
         if hasattr(file, 'read'):
             self.write(file.read())
-    
+
     def upgrade(self):
         """ Upgrade to the latest version.
-        
+
         """
         currversion = getattr(self, '_version', 0)
         if currversion == self.version:
             return 'already running latest version (%s)' % currversion
-        
+
         self._properties = self._def_properties
         self.setup_xsltProperties()
-        
+        self.setup_schemaProperties()
+
         self._version = self.version
         
         return 'upgraded %s to version %s from version %s' % (self.getId(),
@@ -86,16 +91,41 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             except:
                 pass
             setattr(self, 'xslt_%s' % method, curr)
-            
+
         properties = list(self._properties)
         for method in self.render_methods:
             properties.append({'id': 'xslt_%s' % method,
                                'type': 'selection',
                                'select_variable': 'get_templateCandidates',
                                'mode': 'w'})
-            
+
         self._properties = tuple(properties)
-        
+
+    def setup_schemaProperties(self):
+        """ Setup the various XML schema properties.
+
+        """
+
+        propname = 'xml_schema'
+        curr = getattr(self, propname, '')
+        try:
+            self._delProperty(propname)
+        except ValueError:
+            pass
+        try:
+            delattr(self, propname)
+        except:
+            pass
+        setattr(self, propname, curr)
+
+        properties = list(self._properties)
+        properties.append({'id': propname,
+                               'type': 'selection',
+                               'select_variable': 'get_schemaCandidates',
+                               'mode': 'w'})
+
+        self._properties = tuple(properties)
+
     def om_icons(self):
         """ Return a list of icon URLs to be displayed by an ObjectManager.
         
@@ -131,7 +161,6 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                                         processorNss=xml.dom.ext.GetAllNs(dom.documentElement))
         return xpath.Evaluate(expr,context=context)
 
-
     def xpath_as_xml(self, expr=''):
         """ Return the snippets corresponding to the xpath query as a list
             of XML strings.
@@ -144,12 +173,12 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         return results
 
-    def _get_stylesheet_path_objs(self):
-        """ Return the objects corresponding to self.stylesheet_paths.
+    def _get_path_objs(self, path_list):
+        """ Return the objects corresponding to the specified path list
         
         """
         objs = []
-        for path in self.stylesheet_paths:
+        for path in path_list:
             obj = self.unrestrictedTraverse(path, None)
             if obj and obj.meta_type == 'Folder':
                 objs.append(obj)
@@ -171,8 +200,30 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         for item in self.superValues('XSLT Template'):
             vals.append(item.id)
         
-        for obj in self._get_stylesheet_path_objs():
+        for obj in self._get_path_objs(self.stylesheet_paths):
             for item in obj.superValues('XSLT Template'):
+                vals.append(item.id)
+
+        return tuple(vals)
+
+    def get_schemaCandidates(self, include_unselected=1):
+        """ Return a tuple of schema Containers available for us
+        to validate against.
+
+        Optionally specify whether we want the unselected candidate
+        option to be included.
+        
+        """
+        vals = []
+        
+        if include_unselected:
+            vals.append(self.unselected_schema)
+
+        #for item in self.superValues('XML Template'):
+        #    vals.append(item.id)
+        
+        for obj in self._get_path_objs(self.schema_paths):
+            for item in obj.superValues('XML Template'):
                 vals.append(item.id)
         
         return tuple(vals)
