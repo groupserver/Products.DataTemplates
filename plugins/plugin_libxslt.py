@@ -20,3 +20,8 @@ def render(self, source_xml, content_type):
     os.remove(fn)
 
     return result
+
+def register_plugin(plugin_registry):
+    plugin_registry['http://iopen.co.nz/plugins/xslt/libxslt'] = ('libxslt',
+                                                                  render)
+

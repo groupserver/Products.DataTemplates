@@ -1,5 +1,5 @@
 # we can't use cStringIO because it's not unicode compliant
-import urllib, StringIO
+import urllib, StringIO, os
 import cStringIO
 StringIO = cStringIO
 #

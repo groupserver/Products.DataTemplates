@@ -5,3 +5,5 @@ def initialize(context):
     XSLTTemplate.initialize(context)
     DTCacheManager.initialize(context)
 
+# do a quick import of the plugins, in order to get any errors immediately
+import plugins

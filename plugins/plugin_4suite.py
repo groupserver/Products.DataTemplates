@@ -22,3 +22,7 @@ def render(self, source_xml, content_type):
     result = proc.runString(source_xml, writer=writer)
 
     return result
+
+def register_plugin(plugin_registry):
+    plugin_registry['http://iopen.co.nz/plugins/xslt/4suite'] = ('4Suite',
+                                                                 render)

@@ -119,7 +119,7 @@ class XSLTTemplate(ZopePageTemplate.ZopePageTemplate,
         import sys
         render_plugin = self.get_currentRenderPlugin()
         if render_plugin:
-            result = render_plugin.render(self, source_xml, content_type)
+            result = render_plugin(self, source_xml, content_type)
         else:
             result = ''
 	
