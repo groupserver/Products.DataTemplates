@@ -126,9 +126,11 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         except ImportError:
             from Ft.Xml import XPath as xpath
 
-        context = xpath.Context.Context(self.get_dom(self(method='xml')),
+        dom = self.get_dom(self(method='xml'))
+        context = xpath.Context.Context(dom,
                                         processorNss=xml.dom.ext.GetAllNs(dom.documentElement))
         return xpath.Evaluate(expr,context=context)
+
 
     def xpath_as_xml(self, expr=''):
         """ Return the snippets corresponding to the xpath query as a list
