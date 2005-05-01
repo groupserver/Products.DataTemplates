@@ -125,7 +125,7 @@ class RMLRenderer(SimpleItem, PropertyManager):
         objs = []
         for path in path_list:
             obj = self.unrestrictedTraverse(path, None)
-            if obj and obj.meta_type == 'Folder':
+            if obj and getattr(obj, 'isPrincipiaFolderish', 0):
                 objs.append(obj)
         
         return objs

@@ -245,7 +245,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         objs = []
         for path in path_list:
             obj = self.unrestrictedTraverse(path, None)
-            if obj and obj.meta_type == 'Folder':
+            if obj and getattr(obj, 'isPrincipiaFolderish', 0):
                 objs.append(obj)
         
         return objs
@@ -368,7 +368,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         """
         import urlparse, md5, re
-        
+       
         request = getattr(self, 'REQUEST', None)
         
         method = None
