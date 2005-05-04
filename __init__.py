@@ -15,6 +15,7 @@ def log(err):
 try:
     import FSXMLTemplate
     import FSXSLTTemplate
+    import FSNewPropertiesObject
 except:
     log('Problem importing FileSystemSite Templates, check that FileSystemSite '
         'is installed.')

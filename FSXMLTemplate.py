@@ -25,7 +25,7 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, Src
 
 from Products.FileSystemSite.DirectoryView import registerFileExtension, expandpath
 from Products.FileSystemSite.FSObject import FSObject
-from Products.FileSystemSite.FSNewPropertiesObject import FSNewPropertiesObject
+from FSNewPropertiesObject import FSNewPropertiesObject
 
 class TransformError(Exception):
     pass
@@ -66,6 +66,17 @@ class FSXMLTemplate(FSPageTemplate, ZopePageTemplate, XMLTemplate):
         
         ZopePageTemplate.__init__(self, id)            
         
+    def _readFile(self, reparse):
+        fp = expandpath(self._filepath)
+        file = open(fp, 'r')    # not 'rb', as this is a text file!
+        try:
+            data = file.read()
+        finally:
+            file.close()
+        if reparse:
+            self.content_type = 'text/xml'
+            self.write(data)
+
     def _exec(self, bound_names, args, kw):
         """ Call an FS XML Template by calling the underlying Data Template
         method.

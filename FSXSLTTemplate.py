@@ -21,7 +21,7 @@ import Globals
 from Products.FileSystemSite.FSPageTemplate import FSPageTemplate
 from Products.PageTemplates.ZopePageTemplate import Src
 
-from Products.FileSystemSite.DirectoryView import registerFileExtension
+from Products.FileSystemSite.DirectoryView import registerFileExtension, expandpath
 from Products.FileSystemSite.FSObject import FSObject
 
 from Products.DataTemplates.XSLTTemplate import XSLTTemplate
@@ -42,6 +42,17 @@ class FSXSLTTemplate(FSPageTemplate, XSLTTemplate):
         self.title = id
         self.id = id
         self._setPropValue("content_type", "text/xml")
+
+    def _readFile(self, reparse):
+        fp = expandpath(self._filepath)
+        file = open(fp, 'r')    # not 'rb', as this is a text file!
+        try:
+            data = file.read()
+        finally:
+            file.close()
+        if reparse:
+            self.content_type = 'text/xml'
+            self.write(data)
         
 
 d = FSXSLTTemplate.__dict__
