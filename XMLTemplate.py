@@ -35,12 +35,13 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
     
     """
     security = ClassSecurityInfo()
+    char_encoding = 'UTF-8'    
     
     unselected_transform = 'do not use transform'
     unselected_schema = 'do not use schema'
     meta_type = "XML Template"
     
-    version = 1.65
+    version = 1.68
     
     render_methods = ['xml', 'html', 'pdf']
     content_type_map = {'xml': 'text/xml',
@@ -48,7 +49,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                         'pdf': 'application/pdf'}
     
     cache_manager = DTCacheManagerAware.null_cache_manager
-
+    
     default_render_method = ''
     transform_container_types = ('RML Renderer', 'XSLT Template')
     transform_paths = []
@@ -249,7 +250,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                 objs.append(obj)
         
         return objs
-
+        
     def get_templateCandidates(self, include_unselected=1):
         """ Return a tuple of transform Containers available for us
         to render against.
@@ -266,7 +267,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                 objs.append(item)
                 
         for obj in objs:
-            mtype = re.sub('template|renderer', '', obj.meta_type.lower()).strip()
+            mtype = re.sub('template|renderer', '',
+                           obj.meta_type.lower()).strip()
             vals.append('%s (%s)' % (obj.id, mtype))
         
         vals.sort()
@@ -328,12 +330,14 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             # respond to the caller an XML stream indicating the result
             # of the call
             if RESPONSE:
-                RESPONSE.setHeader('content-type', 'text/xml')
+                RESPONSE.setHeader('content-type', 'text/xml; charset=%s' % 
+                                   self.char_encoding)
                 RESPONSE.write('<save status="ok"/>')
             return 1
         except:
             if RESPONSE:
-                RESPONSE.setHeader('context-type', 'text/xml')
+                RESPONSE.setHeader('context-type', 'text/xml; charset=%s' %
+                                   self.char_encoding)
                 RESPONSE.write('<save status="failed"/>')
             return 0
         
@@ -368,11 +372,12 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         """
         import urlparse, md5, re
-       
+        
         request = getattr(self, 'REQUEST', None)
         
         method = None
-        if extra_context.has_key('options') and extra_context['options'].has_key('method'):
+        if (extra_context.has_key('options') and
+            extra_context['options'].has_key('method')):
             method = extra_context['options']['method']
         elif request.has_key('method'):
             method = request['method']
@@ -384,8 +389,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         transform_id = re.sub('\s\([^\(]*?\)$', '', transform_id)
         
         content_type = self.content_type_map.get(method, 'text/plain')
-        # note we make sure we don't have a unicode object at the later steps, because that causes
-        # all sorts of headaches with the XML parser later
+        # note we make sure we don't have a unicode object at the later steps,
+        # because that causes all sorts of headaches with the XML parser later
         xml_rendered = str(self.pt_render(extra_context=extra_context))
         if not transform_id or transform_id == self.unselected_transform:
             rendered = xml_rendered
@@ -397,7 +402,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
                     if transform:
                         break
             if not transform:
-                raise TransformError, 'Transform %s did not exist' % transform_id
+                raise TransformError, ('Transform %s did not exist' % 
+                                       transform_id)
             self.prune_cache()
             cached = self.retrieve_cache(transform, xml_rendered)
             if cached:
@@ -413,8 +419,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         base = urlparse.urlunparse(pathparts)
         
         RESPONSE.setBase(base)
-        RESPONSE.setHeader('Content-Type', content_type)
-        
+        RESPONSE.setHeader('Content-Type', '%s; charset=%s' % (content_type,
+                                                            self.char_encoding))
         return rendered
 
     def _exec(self, bound_names, args, kw):
@@ -436,7 +442,9 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         try:
             response = self.REQUEST.RESPONSE
             if not response.headers.has_key('content-type'):
-                response.setHeader('content-type', self.content_type)
+                response.setHeader('Content-Type', '%s; charset=%s' % 
+                                              (self.content_type,
+                                               self.char_encoding))
         except AttributeError:
             pass
         
