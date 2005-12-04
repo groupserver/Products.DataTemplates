@@ -117,10 +117,10 @@ class TestXMLTemplate(ZopeTestCase.ZopeTestCase):
         """
         xml_template = self._setupXMLTemplate()
         
-        # should contain the unselected xslt
+        # should contain the unselected transform
         template_candidates = xml_template.get_templateCandidates()
         self.failUnless(type(template_candidates) == type(()))
-        self.failUnless(template_candidates == (xml_template.unselected_xslt,))
+        self.failUnless(template_candidates == (xml_template.unselected_transform,))
         
         # should be completely empty
         template_candidates = xml_template.get_templateCandidates(0)
@@ -174,3 +174,4 @@ else:
         suite = unittest.TestSuite()
         suite.addTest(unittest.makeSuite(TestXMLTemplate))
         return suite
+
