@@ -27,6 +27,62 @@ from Products.FileSystemSite.DirectoryView import registerFileExtension, registe
 from Products.FileSystemSite.Permissions import ViewManagementScreens
 from Products.FileSystemSite.FSObject import FSObject
 
+def parsePropertiesFile(fp, reparse):
+    # do the actual parsing for _readFile
+    
+    file = open(fp, 'r')    # not 'rb', as this is a text file!
+    try:
+        lines = file.readlines()
+    finally:
+        file.close()
+
+    map = []
+    lino=0
+        
+    last_propname = None; last_proptype = None
+    for line in lines:
+        lino = lino + 1
+        line = line.strip()
+
+        if not line or line[0] == '#':
+            continue
+        try:
+            try:
+                propname, proptv = line.split(':',1)
+                proptype, propvstr = proptv.split( '=', 1 )        
+                propname = propname.strip()
+                proptype = proptype.strip()
+                propvstr = propvstr.strip()
+            except ValueError:
+                dvalue = map[-1]['default_value'][:]
+                if last_proptype in ('lines', 'ulines'):
+                    dvalue.append(line.strip())
+                elif last_proptype in ('text', 'utext'):
+                    dvalue = dvalue+'\n'+line.strip()
+                else:
+                    raise
+                map[-1]['default_value'] = dvalue
+                setattr(self, map[-1]['id'], dvalue)
+                continue
+                    
+            converter = get_converter( proptype, lambda x: x )
+            propvalue = converter( propvstr )
+            # Should be safe since we're loading from
+            # the filesystem.
+            map.append({'id':propname,
+                        'type':proptype,
+                        'mode':'',
+                        'default_value':propvalue,
+                        })
+            last_propname = propname
+            last_proptype = proptype
+        except:
+            raise
+            raise ValueError, ( 'Error processing line %s of %s:\n%s'
+                              % (lino,fp,line) )
+    
+    return tuple(map)
+
 class FSNewPropertiesObject (FSObject, PropertyManager):
     """FSPropertiesObjects simply hold properties."""
 
@@ -89,65 +145,10 @@ class FSNewPropertiesObject (FSObject, PropertyManager):
         """
         fp = expandpath(self._filepath)
 
-        return self._parseFile(fp, reparse)
-
-    def _parseFile(self, fp, reparse):
-        # do the actual parsing for _readFile
-        
-        file = open(fp, 'r')    # not 'rb', as this is a text file!
-        try:
-            lines = file.readlines()
-        finally:
-            file.close()
-
-        map = []
-        lino=0
-        
-        last_propname = None; last_proptype = None
-        for line in lines:
-
-            lino = lino + 1
-            line = line.strip()
-
-            if not line or line[0] == '#':
-                continue
-            try:
-                try:
-                    propname, proptv = line.split(':',1)
-                    proptype, propvstr = proptv.split( '=', 1 )        
-                    propname = propname.strip()
-                    proptype = proptype.strip()
-                    propvstr = propvstr.strip()
-                except ValueError:
-                    dvalue = map[-1]['default_value'][:]
-                    if last_proptype in ('lines', 'ulines'):
-                        dvalue.append(line.strip())
-                    elif last_proptype in ('text', 'utext'):
-                        dvalue = dvalue+'\n'+line.strip()
-                    else:
-                        raise
-                    map[-1]['default_value'] = dvalue
-                    setattr(self, map[-1]['id'], dvalue)
-                    continue
-                    
-                converter = get_converter( proptype, lambda x: x )
-                propvalue = converter( propvstr )
-                # Should be safe since we're loading from
-                # the filesystem.
-                setattr(self, propname, propvalue)
-                map.append({'id':propname,
-                            'type':proptype,
-                            'mode':'',
-                            'default_value':propvalue,
-                            })
-                last_propname = propname
-                last_proptype = proptype
-            except:
-                raise
-                raise ValueError, ( 'Error processing line %s of %s:\n%s'
-                                  % (lino,fp,line) )
-        
-        self._properties = tuple(map)
+        prop_map = parsePropertiesFile(fp, reparse)
+        for propdict in prop_map:
+            setattr(self, propdict['id'], propdict['default_value'])
+        self._properties = prop_map
 
     if Globals.DevelopmentMode:
         # Provide an opportunity to update the properties.

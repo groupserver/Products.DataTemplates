@@ -25,7 +25,7 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, Src
 
 from Products.FileSystemSite.DirectoryView import registerFileExtension, expandpath
 from Products.FileSystemSite.FSObject import FSObject
-from FSNewPropertiesObject import FSNewPropertiesObject
+from FSNewPropertiesObject import parsePropertiesFile
 
 class TransformError(Exception):
     pass
@@ -39,9 +39,7 @@ class FSXMLTemplate(FSPageTemplate, ZopePageTemplate, XMLTemplate):
     
     """
     meta_type = "XML Template"
-    
-    _parseProperties = FSNewPropertiesObject._parseFile
-    
+        
     def __init__(self, id, filepath, fullname, properties):
         """ Initialise a new instance of XMLTemplate.
 
@@ -60,13 +58,24 @@ class FSXMLTemplate(FSPageTemplate, ZopePageTemplate, XMLTemplate):
         
         try:
             fp = expandpath(self._filepath+'.propsheet')
-            self._parseProperties(fp, 1)
+            prop_map = parsePropertiesFile(fp, 1)
+            for propdict in prop_map:
+                setattr(self, propdict['id'], propdict['default_value'])
+            self._properties = prop_map
         except:
             raise
         
         ZopePageTemplate.__init__(self, id)            
+
+    def inZODB(self):
+        """ """
+        self._readFile(1)
+        self.customising = True
         
     def _readFile(self, reparse):
+        if getattr(self, 'customising', False):
+            return
+            
         fp = expandpath(self._filepath)
         file = open(fp, 'r')    # not 'rb', as this is a text file!
         try:
@@ -84,9 +93,15 @@ class FSXMLTemplate(FSPageTemplate, ZopePageTemplate, XMLTemplate):
         """
         return XMLTemplate._exec(self, bound_names, args, kw)
 
-d = FSXMLTemplate.__dict__
-d['source.xml'] = d['source.html'] = Src()
+d = FSXMLTemplate
+o = Src()
+setattr(d, 'source.xml', o)
+setattr(d, 'source.html', o)
 
 Globals.InitializeClass(FSXMLTemplate)
 
 registerFileExtension('xml', FSXMLTemplate)
+registerMetaType('XML Template', FSXMLTemplate)
+registerFileExtension('xml', FSXMLTemplate)
+
+

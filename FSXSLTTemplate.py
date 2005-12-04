@@ -54,11 +54,13 @@ class FSXSLTTemplate(FSPageTemplate, XSLTTemplate):
             self.content_type = 'text/xml'
             self.write(data)
         
-
-d = FSXSLTTemplate.__dict__
-d['source.xml'] = d['source.html'] = Src()
+d = FSXSLTTemplate
+o = Src()
+setattr(d, 'source.xml', o)
+setattr(d, 'source.html', o)
 
 Globals.InitializeClass(FSXSLTTemplate)
 
 registerFileExtension('xsl', FSXSLTTemplate)
 registerFileExtension('xslt', FSXSLTTemplate)
+registerMetaType('XSLT Template', FSXSLTTemplate)
