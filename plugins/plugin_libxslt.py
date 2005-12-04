@@ -7,6 +7,9 @@
 # to the head. Code which does not follow the rules will be rejected.  
 #
 import libxslt, libxml2, StringIO, sys, os, urllib, tempfile
+import ThreadLock
+
+_thread_lock = ThreadLock.allocate_lock()
 
 if hasattr(libxslt.stylesheet, 'saveResultToString'):
     RENDERVIAFILE=0
@@ -42,20 +45,18 @@ class UriResolver:
             stream = urllib.urlopen(uri)
         return stream
 
-def render(self, source_xml, content_type):
+def _render(self, source_xml, content_type):
     """ Render document using libxslt.
 
     """
-
     # handle URI's as if they were in the ZODB
     resolver = UriResolver(self).resolve
     libxml2.setEntityLoader(resolver)
-    
     styledoc = libxml2.parseDoc(self())
     style = libxslt.parseStylesheetDoc(styledoc)
     doc = libxml2.parseDoc(source_xml)
     result = style.applyStylesheet(doc, None)
-    
+        
     result_string = ''
     try:
         if not RENDERVIAFILE:
@@ -74,9 +75,19 @@ def render(self, source_xml, content_type):
         style.freeStylesheet()
         doc.freeDoc()
         result.freeDoc()
-
+    
     return result_string
 
+def render(self, source_xml, content_type):
+    """ Render document using libxslt.
+
+    """
+    try:
+        _thread_lock.acquire()
+        return _render(self, source_xml, content_type)
+    finally:
+        _thread_lock.release()
+    
 def register_plugin(plugin_registry):
     plugin_registry['http://iopen.co.nz/plugins/xslt/libxslt'] = ('libxslt',
                                                                    render)
