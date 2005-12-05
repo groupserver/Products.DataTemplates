@@ -101,7 +101,4 @@ setattr(d, 'source.html', o)
 Globals.InitializeClass(FSXMLTemplate)
 
 registerFileExtension('xml', FSXMLTemplate)
-registerMetaType('XML Template', FSXMLTemplate)
-registerFileExtension('xml', FSXMLTemplate)
-
-
+#registerMetaType('XML Template', FSXMLTemplate)

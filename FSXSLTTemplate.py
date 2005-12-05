@@ -63,4 +63,4 @@ Globals.InitializeClass(FSXSLTTemplate)
 
 registerFileExtension('xsl', FSXSLTTemplate)
 registerFileExtension('xslt', FSXSLTTemplate)
-registerMetaType('XSLT Template', FSXSLTTemplate)
+#registerMetaType('XSLT Template', FSXSLTTemplate)
