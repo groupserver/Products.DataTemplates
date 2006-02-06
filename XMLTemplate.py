@@ -412,7 +412,6 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             if cached:
                 rendered = cached
             else:
-                log.error('transform: %s (%s)' % (transform.getId(), transform.meta_type))
                 rendered = transform.render_xml(xml_rendered, content_type)
                 self.update_cache(transform, xml_rendered, rendered, 0)
             
