@@ -17,32 +17,42 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
+import logging
+logger = logging.getLogger()
+
 import sys, traceback
 def log_tb(plugin_name):
-    sys.stderr.write('Problem importing DataTemplate plugin %s\n' % plugin_name)
-    traceback.print_exc(sys.stderr)
-    
+    logger.info('Problem importing DataTemplate plugin %s. This is normal '
+                'as long as one plugin loads.' % plugin_name)
+    #sys.stderr.write('Problem importing DataTemplate plugin %s\n' % plugin_name)
+    #traceback.print_exc(sys.stderr)
+
+def log_success(plugin_name):
+    logger.info('Successfully imported DataTemplate plugin %s.' % plugin_name)
 
 plugin_registry = {}
 
 try:
     import plugin_4suite_1_0a1
     plugin_4suite_1_0a1.register_plugin(plugin_registry)
+    log_success('4suite_1_0a1')
 except:
     log_tb('4suite_1_0a1')
 try:
     import plugin_4suite
     plugin_4suite.register_plugin(plugin_registry)
+    log_success('4suite')
 except:
     log_tb('4suite')
 try:
     import plugin_libxslt
     plugin_libxslt.register_plugin(plugin_registry)
+    log_success('libxslt')
 except:
     log_tb('libxslt')
-
 try:
     import plugin_pyana
     plugin_pyana.register_plugin(plugin_registry)
+    log_success('pyana')
 except:
     log_tb('pyana')

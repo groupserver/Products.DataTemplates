@@ -17,15 +17,22 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
+import logging
+logger = logging.getLogger()
+
 import sys, traceback
 def log_tb(plugin_name):
-    sys.stderr.write('Problem importing DataTemplate RML plugin %s\n' % plugin_name)
-    traceback.print_exc(sys.stderr)
+    logger.info('Problem importing DataTemplate RML plugin %s. This is normal '
+                'as long as one plugin loads.' % plugin_name)
+
+def log_success(plugin_name):
+    logger.info('Successfully imported DataTemplate RML plugin %s.' % plugin_name)
 
 plugin_registry = {}
 
 try:
     import plugin_trml2pdf
     plugin_trml2pdf.register_plugin(plugin_registry)
+    log_success('plugin_trml2pdf')
 except:
     log_tb('plugin_trml2pdf')
