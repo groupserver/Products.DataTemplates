@@ -23,6 +23,9 @@ from Products.PageTemplates import ZopePageTemplate, PageTemplateFile
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from DTCacheManager import DTCacheManagerAware
 
+import logging
+log = logging.getLogger()
+
 class TransformError(Exception):
     pass
 
@@ -396,10 +399,10 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             rendered = xml_rendered
         else:
             transform = getattr(self, transform_id, None)
-            if not transform:
+            if not transform or transform.meta_type != 'XSLT Template':
                 for obj in self._get_path_objs(self.transform_paths):
                     transform = getattr(obj, transform_id, None)
-                    if transform:
+                    if transform and transform.meta_type == 'XSLT Template':
                         break
             if not transform:
                 raise TransformError, ('Transform %s did not exist' % 
@@ -409,6 +412,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             if cached:
                 rendered = cached
             else:
+                log.error('transform: %s (%s)' % (transform.getId(), transform.meta_type))
                 rendered = transform.render_xml(xml_rendered, content_type)
                 self.update_cache(transform, xml_rendered, rendered, 0)
             
