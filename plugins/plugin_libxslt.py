@@ -1,4 +1,4 @@
-# Copyright IOPEN Technologies Ltd., 2003
+# Copyright IOPEN Technologies Ltd., 2003-2006
 # richard@iopen.net
 #
 # For details of the license, please see LICENSE.
@@ -6,8 +6,14 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the head. Code which does not follow the rules will be rejected.  
 #
-import libxslt, libxml2, StringIO, sys, os, urllib, tempfile
+import libxslt, libxml2, StringIO, sys, os, urllib, tempfile, md5
 import ThreadLock
+import logging, time
+log = logging.getLogger()
+
+# Turn caching of XSLT on or off. This is an order of magnitude faster,
+# but unfortunately we can only _uncache_ at the moment by restarting.
+cache_on = False
 
 _thread_lock = ThreadLock.allocate_lock()
 
@@ -20,7 +26,7 @@ else:
                      'to the latest version to avoid workarounds\n')
     sys.stderr.flush()
 
-class UriResolver:                                                                   
+class UriResolver:                                       
     def __init__(self,context=None):
         self.context = context
 
@@ -45,18 +51,29 @@ class UriResolver:
             stream = urllib.urlopen(uri)
         return stream
 
+xslt_cache = {}
 def _render(self, source_xml, content_type):
     """ Render document using libxslt.
 
     """
+    global xslt_cache
     # handle URI's as if they were in the ZODB
     resolver = UriResolver(self).resolve
     libxml2.setEntityLoader(resolver)
-    styledoc = libxml2.parseDoc(self())
-    style = libxslt.parseStylesheetDoc(styledoc)
+    
+    stylesheet = self()
+    key = self.absolute_url(1)
+    if cache_on and xslt_cache.has_key(key):
+        style = xslt_cache[key]
+    else:
+        styledoc = libxml2.parseDoc(stylesheet)
+        style = libxslt.parseStylesheetDoc(styledoc)
+        if cache_on:
+            xslt_cache[key] = style    
+    
     doc = libxml2.parseDoc(source_xml)
     result = style.applyStylesheet(doc, None)
-        
+            
     result_string = ''
     try:
         if not RENDERVIAFILE:
@@ -72,7 +89,8 @@ def _render(self, source_xml, content_type):
             f.close()
             os.remove(fn)
     finally:
-        style.freeStylesheet()
+        if cache_on:
+            style.freeStylesheet()
         doc.freeDoc()
         result.freeDoc()
     
