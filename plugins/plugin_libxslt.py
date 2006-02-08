@@ -89,7 +89,7 @@ def _render(self, source_xml, content_type):
             f.close()
             os.remove(fn)
     finally:
-        if cache_on:
+        if not cache_on:
             style.freeStylesheet()
         doc.freeDoc()
         result.freeDoc()
