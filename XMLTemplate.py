@@ -369,6 +369,18 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         dom.unlink()
         
         return stream.getvalue()
+
+    def indexable_content(self):
+        """ Return the text for indexing.
+
+            Two big limitations:
+             
+            1) This is not _rendered_ content, so it's only really suitable
+               for static content
+            2) This is not stripped content either
+
+        """
+        return self._text
         
     def _render_as(self, extra_context={}, RESPONSE=None):
         """ Render the document via the given method.
