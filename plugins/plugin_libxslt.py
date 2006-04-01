@@ -13,7 +13,7 @@ log = logging.getLogger()
 
 # Turn caching of XSLT on or off. This is an order of magnitude faster,
 # but unfortunately we can only _uncache_ at the moment by restarting.
-cache_on = True
+cache_on = False
 
 _thread_lock = ThreadLock.allocate_lock()
 
