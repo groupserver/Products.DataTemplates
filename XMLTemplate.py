@@ -404,9 +404,11 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         transform_id = re.sub('\s\([^\(]*?\)$', '', transform_id)
         
         content_type = self.content_type_map.get(method, 'text/plain')
+
         # note we make sure we don't have a unicode object at the later steps,
         # because that causes all sorts of headaches with the XML parser later
-        xml_rendered = str(self.pt_render(extra_context=extra_context))
+        xml_rendered = self.pt_render(extra_context=extra_context).encode(self.char_encoding)
+
         if not transform_id or transform_id == self.unselected_transform:
             rendered = xml_rendered
         else:
