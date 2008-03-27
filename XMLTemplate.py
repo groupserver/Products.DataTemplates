@@ -455,15 +455,12 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         if not kw.has_key('args'):
             kw['args'] = args
         bound_names['options'] = kw
-        
-        try:
-            response = self.REQUEST.RESPONSE
-            if not response.headers.has_key('content-type'):
-                response.setHeader('Content-Type', '%s; charset=%s' % 
-                                              (self.content_type,
-                                               self.char_encoding))
-        except AttributeError:
-            pass
+
+        response = self.REQUEST.RESPONSE       
+        if not response.headers.has_key('content-type'):
+            response.setHeader('Content-Type', '%s; charset=%s' % 
+                              (self.content_type,
+                               self.char_encoding))
         
         security = getSecurityManager()
         bound_names['user'] = security.getUser()
