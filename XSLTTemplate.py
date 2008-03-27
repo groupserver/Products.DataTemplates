@@ -22,6 +22,9 @@ from Products.PageTemplates import ZopePageTemplate, PageTemplateFile
 from AccessControl import ClassSecurityInfo
 from DTCacheManager import DTCacheManagerAware
 
+class XSLTPluginError(Exception):
+    pass
+
 class XSLTTemplate(ZopePageTemplate.ZopePageTemplate,
                    DTCacheManagerAware):
     """ A Page Template based framework for XSLT. The resulting XSLT is
@@ -139,7 +142,7 @@ class XSLTTemplate(ZopePageTemplate.ZopePageTemplate,
         if render_plugin:
             result = render_plugin(self, source_xml, content_type)
         else:
-            result = ''
+            raise XSLTPluginError("No plugin found to render XML content")
 	
         return result
 
