@@ -52,7 +52,7 @@ class ZBaseUriResolver(BaseUriResolver):
                 if obj:
                     self.context = obj
             if obj:
-                stream = StringIO.StringIO(str(obj()))
+                stream = StringIO.StringIO(obj().encode(self.context.char_encoding))
 
         if not stream and os.access(uri, os.F_OK):
             #Hack because urllib breaks on Windows paths
@@ -71,7 +71,7 @@ def render(self, source_xml, content_type):
     resolver = ZBaseUriResolver(self)
 
     factory = InputSource.InputSourceFactory(resolver=resolver)
-    source = factory.fromString(str(self()), '/'.join(self.getPhysicalPath()))
+    source = factory.fromString(self().encode(self.char_encoding), '/'.join(self.getPhysicalPath()))
     proc.appendStylesheet(source)
 
 

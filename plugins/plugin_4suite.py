@@ -28,7 +28,7 @@ def render(self, source_xml, content_type):
     
     proc = Processor()
     proc.setStylesheetReader(ZStylesheetReader(context=self))
-    proc.appendStylesheetStream(StringIO.StringIO(str(self())))
+    proc.appendStylesheetStream(StringIO.StringIO(self().encode(self.char_encoding)))
 
     if content_type == 'text/xml':
         writer = xml.xslt.XmlWriter.XmlWriter(None)

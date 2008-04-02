@@ -24,7 +24,7 @@ class StringSource:
         self.string = string
     
     def makeStream(self):
-        return StringIO.StringIO(str(self.string))
+        return StringIO.StringIO(self.string)
 
 class UriResolver:                                                                   
     def __init__(self, context=None, reportExceptions=1):
@@ -43,7 +43,7 @@ class UriResolver:
                 if obj:
                     self.context = obj
             if obj:
-                stream = StringSource(str(obj()))
+                stream = StringSource(obj().encode(self.context.char_encoding))
                                                                                 
         if not stream and os.access(uri, os.F_OK):
             #Hack because urllib breaks on Windows paths

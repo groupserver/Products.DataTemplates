@@ -42,7 +42,7 @@ class UriResolver:
                 if obj:
                     self.context = obj
             if obj:
-                stream = StringIO.StringIO(str(obj()))
+                stream = StringIO.StringIO(obj().encode(self.context.char_encoding))
                                                                                 
         if not stream and os.access(uri, os.F_OK):
             #Hack because urllib breaks on Windows paths

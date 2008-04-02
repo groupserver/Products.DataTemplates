@@ -37,6 +37,8 @@ class XSLTTemplate(ZopePageTemplate.ZopePageTemplate,
     
     meta_type = "XSLT Template"
 
+    char_encoding = 'UTF-8'
+
     unselected_xslt_render_plugin = 'do not render xslt'
     
     xslt_render_plugin = unselected_xslt_render_plugin
