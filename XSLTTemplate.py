@@ -17,7 +17,6 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import os, Globals
 from Products.PageTemplates import ZopePageTemplate, PageTemplateFile
 from AccessControl import ClassSecurityInfo
 from DTCacheManager import DTCacheManagerAware
@@ -139,13 +138,12 @@ class XSLTTemplate(ZopePageTemplate.ZopePageTemplate,
         """ Given an XML document, render it using our XSL Template.
         
         """
-        import sys
         render_plugin = self.get_currentRenderPlugin()
         if render_plugin:
             result = render_plugin(self, source_xml, content_type)
         else:
             raise XSLTPluginError("No plugin found to render XML content")
-	
+        
         return result
 
     def index_html(self, RESPONSE):

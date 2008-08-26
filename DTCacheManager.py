@@ -21,7 +21,7 @@ import os, Globals
 
 from Products.PageTemplates import PageTemplateFile
 from BTrees.OOBTree import OOBTree
-from AccessControl import getSecurityManager, ClassSecurityInfo
+from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 from OFS.PropertyManager import PropertyManager
 
@@ -168,9 +168,7 @@ class DTCacheManager(SimpleItem, PropertyManager):
         """ Retrieve from the page cache.
         
         """
-        import md5, time, AccessControl
-        sm = AccessControl.getSecurityManager()
-        user_id = sm.getUser().getId()
+        import md5, time
         
         if self.version > getattr(self, '_version', 0):
             self._invalidate_cache()
@@ -209,7 +207,7 @@ class DTCacheManager(SimpleItem, PropertyManager):
         """ Prune the cache back so we don't have stale records.
         
         """
-        import time, os
+        import time
         
         version = getattr(self, '_version', 0)
         if version < self.version:
@@ -252,7 +250,7 @@ class DTCacheManager(SimpleItem, PropertyManager):
         """ Update the page cache, based on several conditions.
         
         """
-        import time, md5, os, AccessControl
+        import time, md5, AccessControl
         
         sm = AccessControl.getSecurityManager()
         user_id = sm.getUser().getId()

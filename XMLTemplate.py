@@ -17,7 +17,7 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import os, Globals
+import os
 
 from Products.PageTemplates import ZopePageTemplate, PageTemplateFile
 from AccessControl import getSecurityManager, ClassSecurityInfo
@@ -213,7 +213,6 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         """ Return the snippets corresponding to the given xpath query.
                     
         """
-        import xml
         from xml.dom.ext import GetAllNs
         from xml import xpath
         
@@ -359,7 +358,6 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         """
         from xml.dom.ext import PrettyPrint
-        from StringIO import StringIO
         
         dom = self.get_dom(text)
         
@@ -386,7 +384,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         """ Render the document via the given method.
         
         """
-        import urlparse, md5, re
+        import urlparse, re
         
         request = getattr(self, 'REQUEST', None)
         

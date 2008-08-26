@@ -17,7 +17,6 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import os, Globals
 from OFS.SimpleItem import SimpleItem
 from OFS.PropertyManager import PropertyManager
 from AccessControl import ClassSecurityInfo
@@ -158,7 +157,7 @@ class RMLRenderer(SimpleItem, PropertyManager):
         """ Given an XML document, render it using our RML Renderer.
         
         """
-        import sys, re
+        import re
         
         stylesheet_id = getattr(self, 'stylesheet', '')
         stylesheet_id = re.sub('\s\([^\(]*?\)$', '', stylesheet_id)
@@ -182,7 +181,7 @@ class RMLRenderer(SimpleItem, PropertyManager):
             result = render_plugin(self, rendered, content_type)
         else:
             result = ''
-	    
+
         return result
         
     def index_html(self, RESPONSE):
