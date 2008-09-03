@@ -17,7 +17,7 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import reportlab.lib.utils, xml
+import reportlab.lib.utils, xml, types
 from trml2pdf import trml2pdf
 
 import ThreadLock
@@ -104,6 +104,9 @@ def ImageReader__init__(self, fileName, context):
         if obj:
             context = obj
     if obj:
+        # if we're given a function, call it to get the real Image
+        if type(obj) == types.MethodType:
+            obj = obj()        
         data = StringIO.StringIO(obj.data)
         size = (obj.width, obj.height)    
         self._image = PIL.Image.open(PIL.ImageFileIO.ImageFileIO(data))
