@@ -9,11 +9,13 @@
 import libxslt, libxml2, StringIO, sys, os, urllib, tempfile, md5
 import ThreadLock
 import logging, time
-log = logging.getLogger()
+log = logging.getLogger('DataTemplates.plugins.pluginlibxslt')
 
 # Turn caching of XSLT on or off. This is an order of magnitude faster,
 # but unfortunately we can only _uncache_ at the moment by restarting.
-cache_on = False
+cache_on = True
+if not cache_on:
+   log.warn("XSLT Cache is OFF. This may have severe performance consequences.")
 
 _thread_lock = ThreadLock.allocate_lock()
 
