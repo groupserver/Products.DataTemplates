@@ -17,7 +17,7 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import reportlab.lib.utils, xml, types, copy
+import xml, types, copy, sys
 from trml2pdf import trml2pdf
 
 import ThreadLock
@@ -62,11 +62,63 @@ def _rml_styles__init__(self, nodes, context):
             self.styles[style.getAttribute('name')] = self._para_style_get(style)
         for variable in node.getElementsByTagName('initialize'):
             for name in variable.getElementsByTagName('name'):
-                self.names[ name.getAttribute('id')] = name.getAttribute('value')
+                self.names[ name.gectAttribute('id')] = name.getAttribute('value')
 trml2pdf._rml_styles.__init__ = _rml_styles__init__
 
+class ImageReader:
+    "Wraps up either PIL to get data from bitmaps"
+    def __init__(self, fileName, context):
+        import PIL.Image, PIL.ImageFileIO, StringIO
+        self._fileName = fileName
+        self._image = None
+        self._width = None
+        self._height = None
+        self._transparent = None
+        self._data = None
+        
+        for pathpart in fileName.split('/'):
+            if pathpart == '..' or pathpart == '.':
+                # ignore these, acquisition will work anyway
+                continue
+            obj = getattr(context, pathpart, None)
+            # the new context is the object
+            if obj:
+                context = obj
+        if obj:
+            # if we're given a function, call it to get the real Image
+            if type(obj) == types.MethodType:
+                obj = obj()        
+            data = StringIO.StringIO(obj.data)
+            size = (obj.width, obj.height)    
+            self._image = PIL.Image.open(PIL.ImageFileIO.ImageFileIO(data))
+        else:
+            raise RMLPluginError, 'Image %s could not be found' % fileName
+
+    def _jpeg_fh(self):
+        fp = self.fp
+        fp.seek(0)
+        return fp
+
+    def jpeg_fh(self):
+        return None
+
+    def getSize(self):
+        if (self._width is None or self._height is None):
+            self._width, self._height = self._image.size
+        return (self._width, self._height)
+
+    def getRGBData(self):
+        "Return byte array of RGB data as string"
+        if self._data is None:
+            im = self._image
+            mode = self.mode = im.mode
+            if mode not in ('L','RGB','CMYK'):
+                im = im.convert('RGB')
+                self.mode = 'RGB'
+            self._data = im.tostring()
+        return self._data
+
 def _image(self, node):
-    from reportlab.lib.utils import ImageReader
     from trml2pdf import utils
     img = ImageReader(str(node.getAttribute('file')), self.doc.context)
     (sx,sy) = img.getSize()
@@ -85,36 +137,6 @@ def _image(self, node):
                 args['height'] = sy * args['width'] / sx
     self.canvas.drawImage(img, **args)
 trml2pdf._rml_canvas._image = _image
-
-def ImageReader__init__(self, fileName, context):
-    import PIL.Image, PIL.ImageFileIO, StringIO
-    self._fileName = fileName
-    self._image = None
-    self._width = None
-    self._height = None
-    self._transparent = None
-    self._data = None
-    
-    for pathpart in fileName.split('/'):
-        if pathpart == '..' or pathpart == '.':
-            # ignore these, acquisition will work anyway
-            continue
-        obj = getattr(context, pathpart, None)
-        # the new context is the object
-        if obj:
-            context = obj
-    if obj:
-        # if we're given a function, call it to get the real Image
-        if type(obj) == types.MethodType:
-            obj = obj()        
-        data = StringIO.StringIO(obj.data)
-        size = (obj.width, obj.height)    
-        self._image = PIL.Image.open(PIL.ImageFileIO.ImageFileIO(data))
-    else:
-        raise RMLPluginError, 'Image %s could not be found' % fileName
-reportlab.lib.utils.ImageReader.__init__ = ImageReader__init__
-reportlab.lib.utils.ImageReader2 = ImageReader
-reportlab.lib.utils.ImageReader2 = ImageReader
 
 def render(self, source_xml, content_type):
     """ Render document using trml2pdf.
