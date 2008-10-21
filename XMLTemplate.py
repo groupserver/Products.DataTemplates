@@ -406,7 +406,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         # note we make sure we don't have a unicode object at the later steps,
         # because that causes all sorts of headaches with the XML parser later
         xml_rendered = self.pt_render(extra_context=extra_context).encode(self.char_encoding)
-
+        
         if not transform_id or transform_id == self.unselected_transform:
             rendered = xml_rendered
         else:
@@ -426,7 +426,8 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
             else:
                 rendered = transform.render_xml(xml_rendered, content_type)
                 self.update_cache(transform, xml_rendered, rendered, 0)
-            
+        
+        
         # set the base properly
         pathparts = list(urlparse.urlparse(self.absolute_url()))
         base = os.path.split(pathparts[2])[0]
@@ -434,8 +435,11 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         base = urlparse.urlunparse(pathparts)
         
         RESPONSE.setBase(base)
-        RESPONSE.setHeader('Content-Type', '%s; charset=%s' % (content_type,
-                                                            self.char_encoding))
+        
+        rendered.encode(self.char_encoding)
+        
+        #RESPONSE.setHeader('Content-Type', '%s; charset=%s' % (content_type,
+        #                                                    self.char_encoding))
         return rendered
 
     def _exec(self, bound_names, args, kw):
