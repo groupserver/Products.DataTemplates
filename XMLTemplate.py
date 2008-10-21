@@ -436,7 +436,7 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         
         RESPONSE.setBase(base)
         
-        rendered.encode(self.char_encoding)
+        rendered.decode(self.char_encoding)
         
         #RESPONSE.setHeader('Content-Type', '%s; charset=%s' % (content_type,
         #                                                    self.char_encoding))
