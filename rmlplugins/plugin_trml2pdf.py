@@ -17,7 +17,7 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import reportlab.lib.utils, xml, types
+import reportlab.lib.utils, xml, types, copy
 from trml2pdf import trml2pdf
 
 import ThreadLock
@@ -113,6 +113,8 @@ def ImageReader__init__(self, fileName, context):
     else:
         raise RMLPluginError, 'Image %s could not be found' % fileName
 reportlab.lib.utils.ImageReader.__init__ = ImageReader__init__
+reportlab.lib.utils.ImageReader2 = ImageReader
+reportlab.lib.utils.ImageReader2 = ImageReader
 
 def render(self, source_xml, content_type):
     """ Render document using trml2pdf.

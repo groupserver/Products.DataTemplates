@@ -154,9 +154,7 @@ class TestXMLTemplate(ZopeTestCase.ZopeTestCase):
         
         self.failUnless(isinstance(dom, minidom.Document))
     
-    def testWriteWithPrettyPrint(self):
-        from xml.dom import minidom
-        
+    def testWriteWithPrettyPrint(self):        
         xml_template = self._setupXMLTemplate()
         
         xml_template.write(testXML, 1)
@@ -167,7 +165,7 @@ class TestXMLTemplate(ZopeTestCase.ZopeTestCase):
         self.failUnless(minimallyEqualXML(result, testXML))
 
 if __name__ == '__main__':
-    framework(descriptions=1, verbosity=1)
+    framework(descriptions=1, verbosity=1) #@UndefinedVariable
 else:
     import unittest
     def test_suite():
