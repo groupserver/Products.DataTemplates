@@ -18,14 +18,19 @@
 # to the trunk. Code which does not follow the rules will be rejected.
 #
 import logging
+import StringIO
 logger = logging.getLogger()
 
 import sys, traceback
 def log_tb(plugin_name):
+    fp = StringIO.StringIO()
     logger.info('Problem importing DataTemplate plugin %s. This is normal '
                 'as long as one plugin loads.' % plugin_name)
     #sys.stderr.write('Problem importing DataTemplate plugin %s\n' % plugin_name)
     #traceback.print_exc(sys.stderr)
+    traceback.print_exc(file=fp)
+    message = fp.getvalue()
+    logger.warn(message)
 
 def log_success(plugin_name):
     logger.info('Successfully imported DataTemplate plugin %s.' % plugin_name)

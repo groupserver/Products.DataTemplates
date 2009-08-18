@@ -435,11 +435,10 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         base = urlparse.urlunparse(pathparts)
         
         RESPONSE.setBase(base)
+                
+        RESPONSE.setHeader('Content-Type', '%s; charset=%s' % (content_type,
+                                                            self.char_encoding))
         
-        rendered.decode(self.char_encoding)
-        
-        #RESPONSE.setHeader('Content-Type', '%s; charset=%s' % (content_type,
-        #                                                    self.char_encoding))
         return rendered
 
     def _exec(self, bound_names, args, kw):
