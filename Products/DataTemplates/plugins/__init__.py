@@ -18,46 +18,40 @@
 # to the trunk. Code which does not follow the rules will be rejected.
 #
 import logging
-import StringIO
 logger = logging.getLogger()
 
-import sys, traceback
-def log_tb(plugin_name):
-    fp = StringIO.StringIO()
-    logger.info('Problem importing DataTemplate plugin %s. This is normal '
-                'as long as one plugin loads.' % plugin_name)
-    #sys.stderr.write('Problem importing DataTemplate plugin %s\n' % plugin_name)
-    #traceback.print_exc(sys.stderr)
-    traceback.print_exc(file=fp)
-    message = fp.getvalue()
-    logger.warn(message)
-
-def log_success(plugin_name):
-    logger.info('Successfully imported DataTemplate plugin %s.' % plugin_name)
-
 plugin_registry = {}
+success = []
+failures = []
 
 try:
     import plugin_4suite_1_0a1
     plugin_4suite_1_0a1.register_plugin(plugin_registry)
-    log_success('4suite_1_0a1')
+    success.append('4suite_1_0a1')
 except:
-    log_tb('4suite_1_0a1')
+    failures.append('4suite_1_0a1')
 try:
     import plugin_4suite
     plugin_4suite.register_plugin(plugin_registry)
-    log_success('4suite')
+    success.append('4suite')
 except:
-    log_tb('4suite')
+    failures.append('4suite')
 try:
     import plugin_libxslt
     plugin_libxslt.register_plugin(plugin_registry)
-    log_success('libxslt')
+    success.append('libxslt')
 except:
-    log_tb('libxslt')
+    failures.append('libxslt')
 try:
     import plugin_pyana
     plugin_pyana.register_plugin(plugin_registry)
-    log_success('pyana')
+    success.append('pyana')
 except:
-    log_tb('pyana')
+    failures.append('pyana')
+
+if success:
+    log.info("Successfully loaded DataTemplates plugin/s: %s" %
+              ",".join(success))
+else:
+    log.error("Was unable to load any DataTemplates plugins, tried: %s" %
+              ",".join(failures))
