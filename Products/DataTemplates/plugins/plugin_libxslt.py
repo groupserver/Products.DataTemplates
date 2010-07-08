@@ -7,7 +7,7 @@
 # to the head. Code which does not follow the rules will be rejected.  
 #
 import libxslt, libxml2, StringIO, sys, os, urllib, tempfile, md5
-import ThreadLock
+from threading import Lock
 import logging, time
 log = logging.getLogger('DataTemplates.plugins.pluginlibxslt')
 
@@ -17,7 +17,7 @@ cache_on = True
 if not cache_on:
    log.warn("XSLT Cache is OFF. This may have severe performance consequences.")
 
-_thread_lock = ThreadLock.allocate_lock()
+_thread_lock = Lock()
 
 if hasattr(libxslt.stylesheet, 'saveResultToString'):
     RENDERVIAFILE=0
