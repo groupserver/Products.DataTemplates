@@ -18,7 +18,7 @@
 # to the trunk. Code which does not follow the rules will be rejected.
 #
 import logging
-logger = logging.getLogger()
+log = logging.getLogger()
 
 plugin_registry = {}
 success = []
