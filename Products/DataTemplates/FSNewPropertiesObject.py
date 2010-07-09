@@ -22,7 +22,7 @@ from OFS.Folder import Folder
 from OFS.PropertyManager import PropertyManager
 from ZPublisher.Converters import get_converter
 from AccessControl import ClassSecurityInfo
-from AccessControl.class_init import InitializeClass
+from App.class_init import InitializeClass
 
 from Products.FileSystemSite.utils import _dtmldir
 from Products.FileSystemSite.DirectoryView import registerFileExtension, registerMetaType, expandpath

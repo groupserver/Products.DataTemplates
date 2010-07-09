@@ -24,7 +24,7 @@ from Products.FileSystemSite.DirectoryView import registerFileExtension, expandp
 from Products.FileSystemSite.FSObject import FSObject
 
 from Products.DataTemplates.XSLTTemplate import XSLTTemplate
-from AccessControl.class_init import InitializeClass
+from App.class_init import InitializeClass
 class FSXSLTTemplate(FSPageTemplate, XSLTTemplate):
     """ A Page Template based framework for XSLT. The resulting XSLT is
         capable of rendering an XML document, when appropriately called.

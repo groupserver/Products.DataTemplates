@@ -24,7 +24,7 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, Src
 from Products.FileSystemSite.DirectoryView import registerFileExtension, expandpath
 from Products.FileSystemSite.FSObject import FSObject
 from FSNewPropertiesObject import parsePropertiesFile
-from AccessControl.class_init import InitializeClass
+from App.class_init import InitializeClass
 
 class TransformError(Exception):
     pass
