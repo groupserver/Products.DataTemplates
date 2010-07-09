@@ -20,8 +20,8 @@
 import xml, types, copy, sys
 from trml2pdf import trml2pdf
 
-from threading import Lock 
-_thread_lock = Lock()
+from threading import RLock 
+_thread_lock = RLock()
 
 class RMLPluginError(Exception):
     pass
