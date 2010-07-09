@@ -17,7 +17,6 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import Globals
 from Products.FileSystemSite.FSPageTemplate import FSPageTemplate
 from Products.PageTemplates.ZopePageTemplate import Src
 
@@ -25,6 +24,7 @@ from Products.FileSystemSite.DirectoryView import registerFileExtension, expandp
 from Products.FileSystemSite.FSObject import FSObject
 
 from Products.DataTemplates.XSLTTemplate import XSLTTemplate
+from AccessControl.class_init import InitializeClass
 class FSXSLTTemplate(FSPageTemplate, XSLTTemplate):
     """ A Page Template based framework for XSLT. The resulting XSLT is
         capable of rendering an XML document, when appropriately called.
@@ -59,7 +59,7 @@ o = Src()
 setattr(d, 'source.xml', o)
 setattr(d, 'source.html', o)
 
-Globals.InitializeClass(FSXSLTTemplate)
+InitializeClass(FSXSLTTemplate)
 
 registerFileExtension('xsl', FSXSLTTemplate)
 registerFileExtension('xslt', FSXSLTTemplate)

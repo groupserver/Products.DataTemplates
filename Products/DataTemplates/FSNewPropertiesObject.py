@@ -22,11 +22,14 @@ from OFS.Folder import Folder
 from OFS.PropertyManager import PropertyManager
 from ZPublisher.Converters import get_converter
 from AccessControl import ClassSecurityInfo
+from AccessControl.class_init import InitializeClass
 
 from Products.FileSystemSite.utils import _dtmldir
 from Products.FileSystemSite.DirectoryView import registerFileExtension, registerMetaType, expandpath
 from Products.FileSystemSite.Permissions import ViewManagementScreens
 from Products.FileSystemSite.FSObject import FSObject
+
+from App.special_dtml import DTMLFile
 
 def parsePropertiesFile(fp, reparse):
     # do the actual parsing for _readFile
@@ -94,7 +97,7 @@ class FSNewPropertiesObject (FSObject, PropertyManager):
     security = ClassSecurityInfo()
 
     security.declareProtected(ViewManagementScreens, 'manage_main')
-    manage_main = Globals.DTMLFile('custprops', _dtmldir)
+    manage_main = DTMLFile('custprops', _dtmldir)
 
     # Declare all (inherited) mutating methods private.
     security.declarePrivate('manage_addProperty')
@@ -159,7 +162,7 @@ class FSNewPropertiesObject (FSObject, PropertyManager):
             return self
 
 
-Globals.InitializeClass(FSNewPropertiesObject)
+InitializeClass(FSNewPropertiesObject)
 
 registerFileExtension('newprops', FSNewPropertiesObject)
 registerMetaType('New Properties Object', FSNewPropertiesObject)

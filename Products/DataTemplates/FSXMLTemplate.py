@@ -17,8 +17,6 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import Globals
-
 from Products.FileSystemSite.FSPageTemplate import FSPageTemplate
 
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, Src
@@ -26,6 +24,7 @@ from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate, Src
 from Products.FileSystemSite.DirectoryView import registerFileExtension, expandpath
 from Products.FileSystemSite.FSObject import FSObject
 from FSNewPropertiesObject import parsePropertiesFile
+from AccessControl.class_init import InitializeClass
 
 class TransformError(Exception):
     pass
@@ -98,7 +97,7 @@ o = Src()
 setattr(d, 'source.xml', o)
 setattr(d, 'source.html', o)
 
-Globals.InitializeClass(FSXMLTemplate)
+InitializeClass(FSXMLTemplate)
 
 registerFileExtension('xml', FSXMLTemplate)
 #registerMetaType('XML Template', FSXMLTemplate)

@@ -17,13 +17,15 @@
 # You MUST follow the rules in http://iopen.net/STYLE before checking in code
 # to the trunk. Code which does not follow the rules will be rejected.
 #
-import os, Globals
+import os
 
 from Products.PageTemplates import PageTemplateFile
 from BTrees.OOBTree import OOBTree
 from AccessControl import ClassSecurityInfo
 from OFS.SimpleItem import SimpleItem
 from OFS.PropertyManager import PropertyManager
+
+from App.Common import package_home
 
 class DTCacheManagerAware:
     """ A Mixin proxy class for locating and using a DTCacheManager instance.
@@ -134,7 +136,7 @@ class DTCacheManager(SimpleItem, PropertyManager):
     anonymous_expiry_time = 86400 # 1 day
     authenticated_expiry_time = 7200 # 2 hours
     prune_interval = 600 # 10 mins
-    cache_dir = os.path.join(Globals.package_home(globals()), 'cache')
+    cache_dir = os.path.join(package_home(globals()), 'cache')
     _def_properties=({'id':'anonymous_expiry_time', 'type': 'int', 'mode': 'w'},
                      {'id':'authenticated_expiry_time', 'type': 'int', 'mode': 'w'},
                      {'id':'prune_interval', 'type': 'int', 'mode': 'w'},
