@@ -53,5 +53,5 @@ if success:
     log.info("Successfully loaded DataTemplates plugin/s: %s" %
               ",".join(success))
 else:
-    log.error("Was unable to load any DataTemplates plugins, tried: %s" %
+    log.warn("Was unable to load any DataTemplates plugins, tried: %s" %
               ",".join(failures))

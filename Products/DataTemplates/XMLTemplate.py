@@ -435,7 +435,6 @@ class XMLTemplate(ZopePageTemplate.ZopePageTemplate,
         base = urlparse.urlunparse(pathparts)
         
         RESPONSE.setBase(base)
-                
         RESPONSE.setHeader('Content-Type', '%s; charset=%s' % (content_type,
                                                             self.char_encoding))
         
